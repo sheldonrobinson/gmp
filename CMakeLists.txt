@@ -297,7 +297,7 @@ add_executable(gen-sieve gen-sieve.c)
 add_dependencies(gen-sieve bootstrap)
 add_custom_command(
   OUTPUT sieve_table.h
-  COMMAND gen-sieve $(GMP_LIMB_BITS) >sieve_table.h.h
+  COMMAND gen-sieve ${GMP_LIMB_BITS} >sieve_table.h.h
   DEPENDS gen-sieve
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Generating sieve_table.h ..."
