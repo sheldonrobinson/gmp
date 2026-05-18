@@ -74,7 +74,7 @@ set(
   generic/add_err1_n.c
   generic/add_err2_n.c
   generic/add_err3_n.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/generic/add_n.c
+  generic/add_n.c
   generic/add_n_sub_n.c
   generic/bdiv_dbm1c.c
   generic/bdiv_q.c
