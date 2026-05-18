@@ -35,9 +35,9 @@ add_executable(run-expr run-expr.c)
 target_link_libraries(run-expr libexpr libgmp)
 
 if(BUILD_TESTING)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
   add_executable(t-expr t-expr.c)
+  target_include_directories(t-expr PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
   target_link_libraries(t-expr libexpr libgmp libtests)
   set_target_properties(t-expr PROPERTIES
-    INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR};${CMAKE_SOURCE_DIR}/tests")
+    INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR};${CMAKE_CURRENT_SOURCE_DIR};${CMAKE_SOURCE_DIR}/tests")
 endif()
