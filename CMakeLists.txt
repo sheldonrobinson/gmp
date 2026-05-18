@@ -405,8 +405,20 @@ include_directories(
 )
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   include_directories(${CMAKE_SOURCE_DIR}/mpn/x86_64/k8)
+  add_custom_command(
+      OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gmp-mparam.h
+      COMMAND
+        ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/mpn/x86_64/gmp-mparam.h
+        ${CMAKE_CURRENT_BINARY_DIR}/gmp-mparam.h)
 else()
   include_directories(${CMAKE_SOURCE_DIR}/mpn/x86)
+  add_custom_command(
+      OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gmp-mparam.h
+      COMMAND
+        ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/mpn/x86/gmp-mparam.h
+        ${CMAKE_CURRENT_BINARY_DIR}/gmp-mparam.h)
 endif()
 
 add_subdirectory(mpn)
