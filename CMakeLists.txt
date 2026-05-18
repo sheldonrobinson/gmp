@@ -30,7 +30,7 @@
 cmake_minimum_required(VERSION 3.12.2)
 
 project(GMP
-  VERSION 6.1.2
+  VERSION 6.3.0
   DESCRIPTION "GNU Multiple Precision Arithmetic Library"
   HOMEPAGE_URL "https://gmplib.org"
   LANGUAGES C CXX ASM)
