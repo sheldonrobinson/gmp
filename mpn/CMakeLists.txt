@@ -264,12 +264,12 @@ set(
   ${CMAKE_CURRENT_BINARY_DIR}/generic/sec_pi1_div_qr.c
   ${CMAKE_CURRENT_BINARY_DIR}/generic/sec_pi1_div_r.c)
 add_library(libmpn OBJECT ${LIBMPN_SOURCES})
-add_dependencies(libmpn gen-fib-table gen-mp-bases)
+add_dependencies(libmpn gen-fib-table gen-sieve-table gen-mp-bases)
 set_property(TARGET libmpn APPEND PROPERTY COMPILE_DEFINITIONS __GMP_WITHIN_GMP)
 set_source_files_properties(
   ${CMAKE_CURRENT_BINARY_DIR}/fib_table.c PROPERTIES GENERATED TRUE)
 set_source_files_properties(
   ${CMAKE_CURRENT_BINARY_DIR}/mp_bases.c PROPERTIES GENERATED TRUE)
 add_dependencies(libmpn
-  gen-fac-table gen-fib-table gen-mp-bases
+  gen-fac-table gen-fib-table gen-sieve-table gen-mp-bases
   gen-trialdivtab-h gen-mpn-jacobitab gen-mpn-perfsqr)
