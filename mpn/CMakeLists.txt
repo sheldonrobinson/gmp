@@ -206,6 +206,7 @@ set(
   generic/sqrmod_bnm1.c
   generic/sqrtrem.c
   generic/sqr_basecase.c
+  generic/strongfibo.c
   #generic/sub.c # inlined
   generic/submul_1.c
   #generic/sub_1.c # inlined
