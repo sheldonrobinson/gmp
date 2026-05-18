@@ -26,6 +26,9 @@
 #  GNU Lesser General Public License along with the GNU MP Library.  If not,
 #  see https://www.gnu.org/licenses/.
 
+if(WIN32)
+    add_definitions(-DSTDIN_FILENO=0 -DSTDOUT_FILENO=1 -DSTDERR_FILENO=2)
+endif()
 
 set(LIBTESTS_SOURCES
   tests.h memory.c misc.c refmpf.c refmpn.c refmpq.c refmpz.c spinner.c trace.c)
