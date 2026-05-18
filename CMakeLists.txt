@@ -410,7 +410,8 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
       COMMAND
         ${CMAKE_COMMAND} -E copy
         ${CMAKE_SOURCE_DIR}/mpn/x86_64/gmp-mparam.h
-        ${CMAKE_CURRENT_BINARY_DIR}/gmp-mparam.h)
+        ${CMAKE_CURRENT_BINARY_DIR}/gmp-mparam.h
+        COMMENT "Copying gmp-mparam.h ...")
 else()
   include_directories(${CMAKE_SOURCE_DIR}/mpn/x86)
   add_custom_command(
@@ -418,8 +419,14 @@ else()
       COMMAND
         ${CMAKE_COMMAND} -E copy
         ${CMAKE_SOURCE_DIR}/mpn/x86/gmp-mparam.h
-        ${CMAKE_CURRENT_BINARY_DIR}/gmp-mparam.h)
+        ${CMAKE_CURRENT_BINARY_DIR}/gmp-mparam.h
+        COMMENT "Copying gmp-mparam.h ...")
 endif()
+
+add_custom_target(
+  cp-gmp-mparam-h ALL
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gmp-mparam.h
+)
 
 add_subdirectory(mpn)
 add_subdirectory(mpf)
