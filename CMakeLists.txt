@@ -292,6 +292,21 @@ add_custom_target(
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/fac_table.h
 )
 
+# Generate sieve_table.h
+add_executable(gen-sieve gen-sieve.c)
+add_dependencies(gen-sieve bootstrap)
+add_custom_command(
+  OUTPUT sieve_table.h
+  COMMAND gen-sieve $(GMP_LIMB_BITS) >sieve_table.h.h
+  DEPENDS gen-sieve
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  COMMENT "Generating sieve_table.h ..."
+)
+add_custom_target(
+  gen-sieve-table ALL
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/sieve_table.h
+)
+
 # Generate fib_table.h and mpn/fib_table.c
 add_executable(gen-fib gen-fib.c)
 add_dependencies(gen-fib bootstrap)
