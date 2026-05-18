@@ -52,7 +52,7 @@ set(LIBMPZ_SOURCES
   invert.c ior.c iset.c iset_d.c iset_si.c iset_str.c iset_ui.c
   jacobi.c kronsz.c kronuz.c kronzs.c kronzu.c
   lcm.c lcm_ui.c limbs_read.c limbs_write.c limbs_modify.c limbs_finish.c
-  lucnum_ui.c lucnum2_ui.c mfac_uiui.c millerrabin.c
+  lucmod.c lucnum_ui.c lucnum2_ui.c mfac_uiui.c millerrabin.c
   mod.c mul.c mul_2exp.c mul_si.c mul_ui.c n_pow_ui.c
   #neg.c # inlined
   nextprime.c
