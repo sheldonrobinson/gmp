@@ -91,6 +91,7 @@ set(
   generic/cnd_swap.c
   generic/com.c
   generic/comb_tables.c
+  generic/compute_powtab.c
   generic/copyd.c
   generic/copyi.c
   generic/dcpi1_bdiv_q.c
@@ -115,11 +116,14 @@ set(
   generic/div_qr_2u_pi1.c
   generic/dump.c
   generic/fib2_ui.c
+  generic/fib2m.c
   generic/gcd.c
   generic/gcdext.c
   generic/gcdext_1.c
   generic/gcdext_lehmer.c
   generic/gcd_1.c
+  generic/gcd_11.c
+  generic/gcd_22.c
   generic/gcd_subdiv_step.c
   generic/get_d.c
   generic/get_str.c
@@ -154,6 +158,7 @@ set(
   generic/mulmid.c
   generic/mulmid_basecase.c
   generic/mulmid_n.c
+  generic/mulmod_bknp1.c
   generic/mulmod_bnm1.c
   generic/mul_1.c
   generic/mul_basecase.c
