@@ -188,6 +188,7 @@ set(
   generic/rshift.c
   generic/sbpi1_bdiv_q.c
   generic/sbpi1_bdiv_qr.c
+  generic/sbpi1_bdiv_r.c
   generic/sbpi1_divappr_q.c
   generic/sbpi1_div_q.c
   generic/sbpi1_div_qr.c
