@@ -33,19 +33,21 @@ include(`../config.m4')
 C cycles/limb	mul_1		addmul_1
 C AMD K8,K9	n/a		n/a
 C AMD K10	n/a		n/a
-C AMD bull	n/a		n/a
-C AMD pile	n/a		n/a
-C AMD steam	n/a		n/a
-C AMD excavator	 ?		 ?
-C AMD bobcat	n/a		n/a
-C AMD jaguar	n/a		n/a
+C AMD bd1	n/a		n/a
+C AMD bd2	n/a		n/a
+C AMD bd3	n/a		n/a
+C AMD bd4	 ?		 ?
+C AMD zen	 ?		 ?
+C AMD bt1	n/a		n/a
+C AMD bt2	n/a		n/a
 C Intel P4	n/a		n/a
-C Intel core2	n/a		n/a
+C Intel PNR	n/a		n/a
 C Intel NHM	n/a		n/a
 C Intel SBR	n/a		n/a
 C Intel IBR	n/a		n/a
 C Intel HWL	 1.68		n/a
-C Intel BWL	 1.69	      1.8-1.9
+C Intel BWL	 1.51	      1.67-1.74
+C Intel SKL	 1.52	      1.63-1.71
 C Intel atom	n/a		n/a
 C Intel SLM	n/a		n/a
 C VIA nano	n/a		n/a
@@ -290,7 +292,7 @@ L(am1end):
 	adc	%rcx, w1		C relies on rcx = 0
 	mov	w1, 8(rp)
 
-	dec	vn			C clear CF and OF as side-effect
+	dec	vn			C clear OF as side-effect
 	jnz	L(outer)
 L(done):
 	pop	%r14
@@ -300,8 +302,7 @@ L(done):
 	FUNC_EXIT()
 	ret
 
-L(f2):
-	mulx(	-8,(up), w2, w3)
+L(f2):	mulx(	-8,(up), w2, w3)
 	lea	8(rp,unneg,8), rp
 	mulx(	(up), w0, w1)
 

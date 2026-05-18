@@ -1,6 +1,6 @@
 /* Test gmp_printf and related functions.
 
-Copyright 2001-2003 Free Software Foundation, Inc.
+Copyright 2001-2003, 2015 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library test suite.
 
@@ -41,17 +41,15 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 
 #if HAVE_INTTYPES_H
 # include <inttypes.h> /* for intmax_t */
-#else
-# if HAVE_STDINT_H
-#  include <stdint.h>
-# endif
+#endif
+#if HAVE_STDINT_H
+# include <stdint.h>
 #endif
 
 #if HAVE_UNISTD_H
 #include <unistd.h>  /* for unlink */
 #endif
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "tests.h"
 
@@ -130,12 +128,11 @@ check_plain (const char *want, const char *fmt_orig, ...)
 }
 
 void
-check_vsprintf (const char *want, const char *fmt, va_list ap)
+check_vsprintf (const char *want, int want_len, const char *fmt, va_list ap)
 {
   char  got[MAX_OUTPUT];
-  int   got_len, want_len;
+  int   got_len;
 
-  want_len = strlen (want);
   got_len = gmp_vsprintf (got, fmt, ap);
 
   if (got_len != want_len || strcmp (got, want) != 0)
@@ -151,13 +148,11 @@ check_vsprintf (const char *want, const char *fmt, va_list ap)
 }
 
 void
-check_vfprintf (const char *want, const char *fmt, va_list ap)
+check_vfprintf (const char *want, int want_len, const char *fmt, va_list ap)
 {
   char  got[MAX_OUTPUT];
-  int   got_len, want_len, fread_len;
+  int   got_len, fread_len;
   long  ftell_len;
-
-  want_len = strlen (want);
 
   rewind (check_vfprintf_fp);
   got_len = gmp_vfprintf (check_vfprintf_fp, fmt, ap);
@@ -189,13 +184,11 @@ check_vfprintf (const char *want, const char *fmt, va_list ap)
 }
 
 void
-check_vsnprintf (const char *want, const char *fmt, va_list ap)
+check_vsnprintf (const char *want, int want_len, const char *fmt, va_list ap)
 {
   char    got[MAX_OUTPUT+1];
-  int     ret, got_len, want_len;
+  int     ret, got_len;
   size_t  bufsize;
-
-  want_len = strlen (want);
 
   bufsize = -1;
   for (;;)
@@ -245,12 +238,11 @@ check_vsnprintf (const char *want, const char *fmt, va_list ap)
 }
 
 void
-check_vasprintf (const char *want, const char *fmt, va_list ap)
+check_vasprintf (const char *want, int want_len, const char *fmt, va_list ap)
 {
   char  *got;
-  int   got_len, want_len;
+  int   got_len;
 
-  want_len = strlen (want);
   got_len = gmp_vasprintf (&got, fmt, ap);
 
   if (got_len != want_len || strcmp (got, want) != 0)
@@ -263,18 +255,16 @@ check_vasprintf (const char *want, const char *fmt, va_list ap)
       printf ("  want_len %d\n", want_len);
       abort ();
     }
-  (*__gmp_free_func) (got, strlen(got)+1);
+  (*__gmp_free_func) (got, got_len+1);
 }
 
 void
-check_obstack_vprintf (const char *want, const char *fmt, va_list ap)
+check_obstack_vprintf (const char *want, int want_len, const char *fmt, va_list ap)
 {
 #if HAVE_OBSTACK_VPRINTF
   struct obstack  ob;
-  int   got_len, want_len, ob_len;
+  int   got_len, ob_len;
   char  *got;
-
-  want_len = strlen (want);
 
   obstack_init (&ob);
   got_len = gmp_obstack_vprintf (&ob, fmt, ap);
@@ -302,15 +292,30 @@ check_obstack_vprintf (const char *want, const char *fmt, va_list ap)
 void
 check_one (const char *want, const char *fmt, ...)
 {
+  int want_len = strlen (want);
   va_list ap;
   va_start (ap, fmt);
 
   /* simplest first */
-  check_vsprintf (want, fmt, ap);
-  check_vfprintf (want, fmt, ap);
-  check_vsnprintf (want, fmt, ap);
-  check_vasprintf (want, fmt, ap);
-  check_obstack_vprintf (want, fmt, ap);
+  check_vsprintf (want, want_len, fmt, ap);
+  check_vfprintf (want, want_len, fmt, ap);
+  check_vsnprintf (want, want_len, fmt, ap);
+  check_vasprintf (want, want_len, fmt, ap);
+  check_obstack_vprintf (want, want_len, fmt, ap);
+}
+
+void
+check_one_len (const char *want, int want_len, const char *fmt, ...)
+{
+  va_list ap;
+  va_start (ap, fmt);
+
+  /* simplest first */
+  check_vsprintf (want, want_len, fmt, ap);
+  check_vfprintf (want, want_len, fmt, ap);
+  check_vsnprintf (want, want_len, fmt, ap);
+  check_vasprintf (want, want_len, fmt, ap);
+  check_obstack_vprintf (want, want_len, fmt, ap);
 }
 
 
@@ -856,22 +861,30 @@ void
 check_misc (void)
 {
   mpz_t  z;
-  mpf_t  f;
 
   mpz_init (z);
-  mpf_init2 (f, 128L);
 
   check_one ("!", "%c", '!');
 
   check_one ("hello world", "hello %s", "world");
   check_one ("hello:", "%s:", "hello");
   mpz_set_ui (z, 0L);
-  check_one ("hello0", "%s%Zd", "hello", z, z);
+  check_one ("hello0", "%s%Zd", "hello", z);
+  check_one_len ("!0\0.", 4, "%c%Zd%c.", '!', z, 0);
 
   {
     static char  xs[801];
     memset (xs, 'x', sizeof(xs)-1);
     check_one (xs, "%s", xs);
+  }
+  {
+    char  *xs;
+    xs = (char *) (*__gmp_allocate_func) (MAX_OUTPUT * 2 - 12);
+    memset (xs, '%', MAX_OUTPUT * 2 - 14);
+    xs [MAX_OUTPUT * 2 - 13] = '\0';
+    xs [MAX_OUTPUT * 2 - 14] = 'x';
+    check_one (xs + MAX_OUTPUT - 7, xs, NULL);
+    (*__gmp_free_func) (xs, MAX_OUTPUT * 2 - 12);
   }
 
   mpz_set_ui (z, 12345L);
@@ -920,7 +933,6 @@ check_misc (void)
 #endif
 
   mpz_clear (z);
-  mpf_clear (f);
 }
 
 

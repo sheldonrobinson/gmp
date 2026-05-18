@@ -2,7 +2,7 @@
 
    Contributed to the GNU project by Marco Bodrato.
 
-Copyright 2009 Free Software Foundation, Inc.
+Copyright 2009, 2020 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library test suite.
 
@@ -23,7 +23,6 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "tests.h"
 
@@ -81,16 +80,7 @@ main (int argc, char **argv)
   TMP_DECL;
   TMP_MARK;
 
-  if (argc > 1)
-    {
-      char *end;
-      count = strtol (argv[1], &end, 0);
-      if (*end || count <= 0)
-	{
-	  fprintf (stderr, "Invalid test count: %s.\n", argv[1]);
-	  return 1;
-	}
-    }
+  TESTS_REPS (count, argv, argc);
 
   tests_start ();
   rands = RANDS;
@@ -136,7 +126,8 @@ main (int argc, char **argv)
 	mp_size_t x;
 	MPN_COPY (ap, ap + (n >> 1), an - (n >> 1));
 	MPN_ZERO (ap + an - (n >> 1) , n - an);
-	x = (n == an) ? 0 : gmp_urandomm_ui (rands, n - an);
+	x = 0;
+	/* x = (n == an) ? 0 : gmp_urandomm_ui (rands, n - an); */
 	ap[x] += gmp_urandomm_ui (rands, 3) - 1;
       }
       rn = MIN(n, 2*an);

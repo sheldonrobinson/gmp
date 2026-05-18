@@ -29,11 +29,10 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 void
-mpq_canonicalize (mpq_t op)
+mpq_canonicalize (mpq_ptr op)
 {
   mpz_t gcd;
   TMP_DECL;

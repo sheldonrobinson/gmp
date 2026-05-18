@@ -35,7 +35,6 @@ GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 /* Gets {pp,n} and (sign?-1:1)*{np,n}. Computes at once:
@@ -46,7 +45,7 @@ see https://www.gnu.org/licenses/.  */
 */
 void
 mpn_toom_couple_handling (mp_ptr pp, mp_size_t n, mp_ptr np,
-			  int nsign, mp_size_t off, int ps, int ns)
+			  unsigned nsign, mp_size_t off, int ps, int ns)
 {
   if (nsign) {
 #ifdef HAVE_NATIVE_mpn_rsh1sub_n

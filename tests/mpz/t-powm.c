@@ -1,7 +1,7 @@
 /* Test mpz_powm, mpz_mul, mpz_mod, mpz_mod_ui, mpz_div_ui.
 
-Copyright 1991, 1993, 1994, 1996, 1999-2001, 2009, 2012 Free Software
-Foundation, Inc.
+Copyright 1991, 1993, 1994, 1996, 1999-2001, 2009, 2012, 2019 Free
+Software Foundation, Inc.
 
 This file is part of the GNU MP Library test suite.
 
@@ -22,7 +22,6 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 #include <stdlib.h>
 #include <string.h>
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "tests.h"
 
@@ -43,6 +42,51 @@ allsizes_seen (unsigned int *allsizes)
   return 1;
 }
 
+void
+small_2pow (unsigned long reps)
+{
+  mpz_t du, exp, mod;
+  mpz_t r1;
+  unsigned long m, e, r;
+  mp_limb_t b0 = 2;
+
+  mpz_roinit_n (du, &b0, 1);
+  mpz_init (exp);
+  mpz_init (mod);
+  mpz_init (r1);
+
+  for (m = 3; m * m < reps; m += 2)
+    {
+      mpz_set_ui (mod, m);
+      r = 1;
+      for (e = 0; e < m; e += 1)
+	{
+	  mpz_set_ui (exp, e);
+	  mpz_powm (r1, du, exp, mod);
+	  MPZ_CHECK_FORMAT (r1);
+	  if (mpz_cmp_ui (r1, r) != 0)
+	    {
+	      fprintf (stderr, "\nIncorrect result for operands:\n");
+	      debug_mp (du, -16);
+	      debug_mp (exp, -16);
+	      debug_mp (mod, -16);
+	      fprintf (stderr, "mpz_powm result:\n");
+	      debug_mp (r1, -16);
+	      fprintf (stderr, "Should be 2 ^ 0x%lx = 0x%lx (mod 0x%lx)\n", e, r, m);
+	      abort ();
+	    }
+	  if (r > (m >> 1))
+	    r = (r << 1) - m;
+	  else
+	    r = r << 1;
+	}
+    }
+
+  mpz_clear (exp);
+  mpz_clear (mod);
+  mpz_clear (r1);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -59,6 +103,7 @@ main (int argc, char **argv)
   tests_start ();
   TESTS_REPS (reps, argv, argc);
 
+  small_2pow ((unsigned int) reps);
   rands = RANDS;
 
   mpz_init (bs);
@@ -74,16 +119,49 @@ main (int argc, char **argv)
 
   memset (allsizes, 0, (1 << (SIZEM + 2 - 1)) * sizeof (int));
 
+  reps += reps >> 3;
   for (i = 0; i < reps || ! allsizes_seen (allsizes); i++)
     {
       mpz_urandomb (bs, rands, 32);
       size_range = mpz_get_ui (bs) % SIZEM + 2;
 
+      if ((i & 7) == 0)
+	{
+	  mpz_set_ui (exp, 1);
+
+	  do  /* Loop until mathematically well-defined.  */
+	    {
+	      mpz_urandomb (bs, rands, size_range / 2 + 2);
+	      base_size = mpz_get_ui (bs);
+	      mpz_rrandomb (base, rands, base_size);
+	    }
+	  while (mpz_cmp_ui (base, 0) == 0);
+
+	  mpz_urandomb (bs, rands, size_range / 2);
+	  mod_size = mpz_get_ui (bs);
+	  mod_size = MIN (mod_size, base_size);
+	  mpz_rrandomb (mod, rands, mod_size);
+
+	  mpz_urandomb (bs, rands, size_range);
+	  mod_size = mpz_get_ui (bs) + base_size + 2;
+	  if ((i & 8) == 0)
+	    mod_size += GMP_NUMB_BITS - mod_size % GMP_NUMB_BITS;
+	  mpz_setbit (mod, mod_size);
+
+	  mpz_sub (base, base, mod);
+	}
+      else
+	{
       do  /* Loop until mathematically well-defined.  */
 	{
-	  mpz_urandomb (bs, rands, size_range);
-	  base_size = mpz_get_ui (bs);
-	  mpz_rrandomb (base, rands, base_size);
+	  if ((i & 7) == 4)
+	    mpz_set_ui (base, 2);
+	  else
+	    {
+	      mpz_urandomb (bs, rands, size_range);
+	      base_size = mpz_get_ui (bs);
+	      mpz_rrandomb (base, rands, base_size);
+	    }
 
 	  mpz_urandomb (bs, rands, 7L);
 	  exp_size = mpz_get_ui (bs);
@@ -107,6 +185,7 @@ main (int argc, char **argv)
 	mpz_neg (base, base);
 
       /* printf ("%ld %ld %ld\n", SIZ (base), SIZ (exp), SIZ (mod)); */
+	}
 
       mpz_set_ui (r2, 1);
       mpz_mod (base2, base, mod);

@@ -30,11 +30,10 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 void
-mpz_urandomb (mpz_ptr rop, gmp_randstate_t rstate, mp_bitcnt_t nbits)
+mpz_urandomb (mpz_ptr rop, gmp_randstate_ptr rstate, mp_bitcnt_t nbits)
 {
   mp_ptr rp;
   mp_size_t size;

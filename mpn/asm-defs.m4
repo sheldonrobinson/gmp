@@ -1051,7 +1051,7 @@ dnl  Normally PIC is defined (or not) by libtool, but it doesn't set it on
 dnl  systems which are always PIC.  PIC_ALWAYS established in config.m4
 dnl  identifies these for us.
 
-ifelse(`PIC_ALWAYS',`yes',`define(`PIC')')
+ifelse(PIC_ALWAYS,`yes',`define(`PIC')')
 
 
 dnl  Various possible defines passed from the Makefile that are to be tested
@@ -1394,6 +1394,8 @@ define_mpn(divrem_newton)
 define_mpn(dump)
 define_mpn(gcd)
 define_mpn(gcd_1)
+define_mpn(gcd_11)
+define_mpn(gcd_22)
 define_mpn(gcdext)
 define_mpn(get_str)
 define_mpn(hamdist)
@@ -1453,6 +1455,9 @@ define_mpn(rsh1sub_n)
 define_mpn(rsh1sub_nc)
 define_mpn(rshift)
 define_mpn(rshiftc)
+define_mpn(sbpi1_bdiv_q)
+define_mpn(sbpi1_bdiv_qr)
+define_mpn(sbpi1_bdiv_r)
 define_mpn(scan0)
 define_mpn(scan1)
 define_mpn(set_str)

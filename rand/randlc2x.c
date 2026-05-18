@@ -1,6 +1,6 @@
 /* Linear Congruential pseudo-random number generator functions.
 
-Copyright 1999-2003, 2005 Free Software Foundation, Inc.
+Copyright 1999-2003, 2005, 2015 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -28,7 +28,6 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 
@@ -70,14 +69,13 @@ typedef struct {
    result.  */
 
 static unsigned long int
-lc (mp_ptr rp, gmp_randstate_t rstate)
+lc (mp_ptr rp, gmp_randstate_ptr rstate)
 {
   mp_ptr tp, seedp, ap;
   mp_size_t ta;
   mp_size_t tn, seedn, an;
   unsigned long int m2exp;
   unsigned long int bits;
-  int cy;
   mp_size_t xn;
   gmp_rand_lc_struct *p;
   TMP_DECL;
@@ -116,7 +114,7 @@ lc (mp_ptr rp, gmp_randstate_t rstate)
   /* t = t + c.  NOTE: tn is always >= p->_cn (precondition for __GMPN_ADD);
      see initialization.  */
   ASSERT (tn >= p->_cn);
-  __GMPN_ADD (cy, tp, tp, tn, p->_cp, p->_cn);
+  mpn_add (tp, tp, tn, p->_cp, p->_cn);
 
   /* t = t % m */
   tp[m2exp / GMP_NUMB_BITS] &= (CNST_LIMB (1) << m2exp % GMP_NUMB_BITS) - 1;
@@ -150,7 +148,7 @@ lc (mp_ptr rp, gmp_randstate_t rstate)
 
 /* Obtain a sequence of random numbers.  */
 static void
-randget_lc (gmp_randstate_t rstate, mp_ptr rp, unsigned long int nbits)
+randget_lc (gmp_randstate_ptr rstate, mp_ptr rp, unsigned long int nbits)
 {
   unsigned long int rbitpos;
   int chunk_nbits;
@@ -229,7 +227,7 @@ randget_lc (gmp_randstate_t rstate, mp_ptr rp, unsigned long int nbits)
 
 
 static void
-randseed_lc (gmp_randstate_t rstate, mpz_srcptr seed)
+randseed_lc (gmp_randstate_ptr rstate, mpz_srcptr seed)
 {
   gmp_rand_lc_struct *p = (gmp_rand_lc_struct *) RNG_STATE (rstate);
   mpz_ptr seedz = p->_mp_seed;
@@ -244,7 +242,7 @@ randseed_lc (gmp_randstate_t rstate, mpz_srcptr seed)
 
 
 static void
-randclear_lc (gmp_randstate_t rstate)
+randclear_lc (gmp_randstate_ptr rstate)
 {
   gmp_rand_lc_struct *p = (gmp_rand_lc_struct *) RNG_STATE (rstate);
 
@@ -291,7 +289,7 @@ randiset_lc (gmp_randstate_ptr dst, gmp_randstate_srcptr src)
 
 
 void
-gmp_randinit_lc_2exp (gmp_randstate_t rstate,
+gmp_randinit_lc_2exp (gmp_randstate_ptr rstate,
 		      mpz_srcptr a,
 		      unsigned long int c,
 		      mp_bitcnt_t m2exp)
@@ -319,7 +317,7 @@ gmp_randinit_lc_2exp (gmp_randstate_t rstate,
   if (SIZ (p->_mp_a) == 0)
     {
       SIZ (p->_mp_a) = 1;
-      PTR (p->_mp_a)[0] = CNST_LIMB (0);
+      MPZ_NEWALLOC (p->_mp_a, 1)[0] = CNST_LIMB (0);
     }
 
   MPN_SET_UI (p->_cp, p->_cn, c);

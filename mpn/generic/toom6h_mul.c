@@ -35,7 +35,6 @@ GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 
@@ -110,7 +109,7 @@ mpn_toom6h_mul   (mp_ptr pp,
 {
   mp_size_t n, s, t;
   int p, q, half;
-  int sign;
+  unsigned sign;
 
   /***************************** decomposition *******************************/
 

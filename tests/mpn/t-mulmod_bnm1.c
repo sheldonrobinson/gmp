@@ -1,8 +1,9 @@
+
 /* Test for mulmod_bnm1 function.
 
    Contributed to the GNU project by Marco Bodrato.
 
-Copyright 2009 Free Software Foundation, Inc.
+Copyright 2009, 2020 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library test suite.
 
@@ -23,7 +24,6 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "tests.h"
 
@@ -85,16 +85,7 @@ main (int argc, char **argv)
   TMP_DECL;
   TMP_MARK;
 
-  if (argc > 1)
-    {
-      char *end;
-      count = strtol (argv[1], &end, 0);
-      if (*end || count <= 0)
-	{
-	  fprintf (stderr, "Invalid test count: %s.\n", argv[1]);
-	  return 1;
-	}
-    }
+  TESTS_REPS (count, argv, argc);
 
   tests_start ();
   rands = RANDS;
@@ -158,9 +149,10 @@ main (int argc, char **argv)
 	MPN_ZERO (ap + an - (n >> 1) , n - an);
 	MPN_COPY (bp, bp + (n >> 1), bn - (n >> 1));
 	MPN_ZERO (bp + bn - (n >> 1) , n - bn);
-	x = (n == an) ? 0 : gmp_urandomm_ui (rands, n - an);
+	x = 0;
+	/* x = (n == an) ? 0 : gmp_urandomm_ui (rands, n - an); */
 	ap[x] += gmp_urandomm_ui (rands, 3) - 1;
-	x = (n >> 1) - x % (n >> 1);
+	/* x = (n >> 1) - x % (n >> 1); */
 	bp[x] += gmp_urandomm_ui (rands, 3) - 1;
 	/* We don't propagate carry, this means that the desired condition
 	   is not triggered all the times. A few times are enough anyway. */

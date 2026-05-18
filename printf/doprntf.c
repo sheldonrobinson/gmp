@@ -38,7 +38,6 @@ see https://www.gnu.org/licenses/.  */
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
 
@@ -268,8 +267,7 @@ __gmp_doprnt_mpf (const struct doprnt_funs_t *funs,
 	 mean truncation */
       ASSERT (explen >= 0 && explen < sizeof(exponent)-1);
 #else
-      sprintf (exponent, p->expfmt, expsign, expval);
-      explen = strlen (exponent);
+      explen = sprintf (exponent, p->expfmt, expsign, expval);
       ASSERT (explen < sizeof(exponent));
 #endif
       TRACE (printf ("  expfmt %s gives %s\n", p->expfmt, exponent));
@@ -381,7 +379,7 @@ __gmp_doprnt_mpf (const struct doprnt_funs_t *funs,
     DOPRNT_REPS (p->fill, justlen);
 
  done:
-  (*__gmp_free_func) (free_ptr, free_size);
+  __GMP_FREE_FUNC_TYPE (free_ptr, free_size, char);
   return retval;
 
  error:

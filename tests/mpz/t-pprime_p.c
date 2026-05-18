@@ -1,6 +1,6 @@
 /* Exercise mpz_probab_prime_p.
 
-Copyright 2002 Free Software Foundation, Inc.
+Copyright 2002, 2018-2019, 2022 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library test suite.
 
@@ -19,7 +19,6 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "tests.h"
 
@@ -32,26 +31,20 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
      composite.  */
 
 
-/* return 1 if prime, 0 if composite */
+/* return 2 if prime, 0 if composite */
 int
-isprime (long n)
+isprime (unsigned long n)
 {
-  long  i;
-
-  n = ABS(n);
-
-  if (n < 2)
-    return 0;
-  if (n == 2)
-    return 1;
+  if (n < 4)
+    return (n & 2);
   if ((n & 1) == 0)
     return 0;
 
-  for (i = 3; i < n; i++)
+  for (unsigned long i = 3; i*i <= n; i+=2)
     if ((n % i) == 0)
       return 0;
 
-  return 1;
+  return 2;
 }
 
 void
@@ -61,11 +54,8 @@ check_one (mpz_srcptr n, int want)
 
   got = mpz_probab_prime_p (n, 25);
 
-  /* "definitely prime" is fine if we only wanted "probably prime" */
-  if (got == 2 && want == 1)
-    want = 2;
-
-  if (got != want)
+  /* "definitely prime" (2) is fine if we only wanted "probably prime" (1) */
+  if ((got != want) && (got != want * 2))
     {
       printf ("mpz_probab_prime_p\n");
       mpz_trace ("  n    ", n);
@@ -114,6 +104,25 @@ check_composites (int count)
   mpz_init (n);
   mpz_init (bs);
 
+  static const char * const composites[] = {
+    "225670644213750121",	/* n=61*C16, if D < 61, (n/D) = 1.	*/
+    "2386342059899637841",	/* n=61*C17, if D < 61, (n/D) = 1.	*/
+    "1194649",	/* A square, but strong base-2 pseudoprime,	*/
+    "12327121",	/* another base-2 pseudoprime square.	*/
+    "18446744066047760377",	/* Should trigger Fibonacci's test;	*/
+    "10323769",			/* &3==1, Lucas' test with D=37;	*/
+    "1397419",			/* &3==3, Lucas' test with D=43;	*/
+    "11708069165918597341",	/* &3==1, Lucas' test with large D=107;	*/
+    "395009109077493751",	/* &3==3, Lucas' test with large D=113.	*/
+    NULL
+  };
+
+  for (i = 0; composites[i]; i++)
+    {
+      mpz_set_str_or_abort (n, composites[i], 0);
+      check_one (n, 0);
+    }
+
   for (i = 0; i < count; i++)
     {
       mpz_urandomb (bs, rands, 32);
@@ -147,7 +156,9 @@ static void
 check_primes (void)
 {
   static const char * const primes[] = {
-    "2", "17", "65537",
+    "2", "53", "1234567891",
+    "2055693949", "1125899906842597", "16412292043871650369",
+    "18446744075358702679",	/* Lucas' test with large D=107.	*/
     /* diffie-hellman-group1-sha1, also "Well known group 2" in RFC
        2412, 2^1024 - 2^960 - 1 + 2^64 * { [2^894 pi] + 129093 } */
     "0xFFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1"
@@ -172,6 +183,47 @@ check_primes (void)
   mpz_clear (n);
 }
 
+static void
+check_fermat_mersenne (int count)
+{
+  int fermat_exponents [] = {1, 2, 4, 8, 16};
+  int mersenne_exponents [] = {2, 3, 5, 7, 13, 17, 19, 31, 61, 89,
+			       107, 127, 521, 607, 1279, 2203, 2281,
+			       3217, 4253, 4423, 9689, 9941, 11213,
+			       19937, 21701, 23209, 44497, 86243};
+  mpz_t pp;
+  int i, j, want;
+
+  mpz_init (pp);
+  count = MIN (110000, count);
+
+  for (i=1; i<count; ++i)
+    {
+      mpz_set_ui (pp, 1);
+      mpz_setbit (pp, i); /* 2^i + 1 */
+      want = 0;
+      for (j = 0; j < numberof (fermat_exponents); j++)
+	if (fermat_exponents[j] == i)
+	  {
+	    /* Fermat's primes are small enough for a definite answer. */
+	    want = 2;
+	    break;
+	  }
+      check_one (pp, want);
+
+      mpz_sub_ui (pp, pp, 2); /* 2^i - 1 */
+      want = 0;
+      for (j = 0; j < numberof (mersenne_exponents); j++)
+	if (mersenne_exponents[j] == i)
+	  {
+	    want = 1 << (i < 50);
+	    break;
+	  }
+      check_one (pp, want);
+    }
+  mpz_clear (pp);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -182,6 +234,7 @@ main (int argc, char **argv)
   tests_start ();
 
   check_small ();
+  check_fermat_mersenne (count >> 3);
   check_composites (count);
   check_primes ();
 

@@ -1,6 +1,6 @@
 /* mpn_mod_1s_3p (ap, n, b, cps)
    Divide (ap,,n) by b.  Return the single-limb remainder.
-   Requires that d < B / 3.
+   Requires that b < B / 3.
 
    Contributed to the GNU project by Torbjorn Granlund.
    Based on a suggestion by Peter L. Montgomery.
@@ -37,7 +37,6 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
 
@@ -111,10 +110,9 @@ mpn_mod_1s_3p (mp_srcptr ap, mp_size_t n, mp_limb_t b, const mp_limb_t cps[6])
       add_ssaaaa (rh, rl, rh, rl, ph, pl);
       n -= 3;
       break;
-    case 2:	/* n mod 3 = 1 */
+    default:	/* n mod 3 = 1; (case 2)*/
       rh = 0;
-      rl = ap[n - 1];
-      n -= 1;
+      rl = ap[--n];
       break;
     case 1:	/* n mod 3 = 2 */
       rh = ap[n - 1];

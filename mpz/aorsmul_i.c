@@ -4,7 +4,8 @@
    ALMOST CERTAIN TO BE SUBJECT TO INCOMPATIBLE CHANGES OR DISAPPEAR
    COMPLETELY IN FUTURE GNU MP RELEASES.
 
-Copyright 2001, 2002, 2004, 2005, 2012 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2004, 2005, 2012, 2021, 2022 Free Software
+Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -32,7 +33,6 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 
@@ -86,7 +86,7 @@ mpz_aorsmul_1 (mpz_ptr w, mpz_srcptr x, mp_limb_t y, mp_size_t sub)
   if (wsize_signed == 0)
     {
       /* nothing to add to, just set x*y, "sub" gives the sign */
-      wp = MPZ_REALLOC (w, xsize+1);
+      wp = MPZ_NEWALLOC (w, xsize+1);
       cy = mpn_mul_1 (wp, PTR(x), xsize, y);
       wp[xsize] = cy;
       xsize += (cy != 0);
@@ -152,10 +152,9 @@ mpz_aorsmul_1 (mpz_ptr w, mpz_srcptr x, mp_limb_t y, mp_size_t sub)
 	    {
 	      /* Borrow out of w, take twos complement negative to get
 		 absolute value, flip sign of w.  */
-	      wp[new_wsize] = ~-cy;  /* extra limb is 0-cy */
-	      mpn_com (wp, wp, new_wsize);
-	      new_wsize++;
-	      MPN_INCR_U (wp, new_wsize, CNST_LIMB(1));
+	      cy -= mpn_neg (wp, wp, new_wsize);
+	      wp[new_wsize] = cy;
+	      new_wsize += (cy != 0);
 	      wsize_signed = -wsize_signed;
 	    }
 	}
@@ -167,9 +166,7 @@ mpz_aorsmul_1 (mpz_ptr w, mpz_srcptr x, mp_limb_t y, mp_size_t sub)
 	  mp_limb_t  cy2;
 
 	  /* -(-cy*b^n + w-x*y) = (cy-1)*b^n + ~(w-x*y) + 1 */
-	  mpn_com (wp, wp, wsize);
-	  cy += mpn_add_1 (wp, wp, wsize, CNST_LIMB(1));
-	  cy -= 1;
+	  cy -= mpn_neg (wp, wp, wsize);
 
 	  /* If cy-1 == -1 then hold that -1 for latter.  mpn_submul_1 never
 	     returns cy==MP_LIMB_T_MAX so that value always indicates a -1. */

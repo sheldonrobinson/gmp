@@ -27,7 +27,6 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 #include <unistd.h>     /* for isatty */
 #endif
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 #include "tests.h"
@@ -52,7 +51,7 @@ int  spinner_tick = 1;     /* 1 ready to print, 0 not */
 
 
 /*ARGSUSED*/
-RETSIGTYPE
+void
 spinner_signal (int signum)
 {
   spinner_tick = 1;
@@ -79,7 +78,7 @@ spinner_signal (int signum)
 void
 spinner_init (void)
 {
-  spinner_wanted = isatty (fileno (stdout));
+  spinner_wanted = isatty (STDOUT_FILENO);
   if (spinner_wanted == -1)
     abort ();
 

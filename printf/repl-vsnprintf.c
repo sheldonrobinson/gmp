@@ -5,7 +5,7 @@
    CERTAIN TO BE SUBJECT TO INCOMPATIBLE CHANGES OR DISAPPEAR COMPLETELY IN
    FUTURE GNU MP RELEASES.
 
-Copyright 2001, 2002 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2018 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -35,9 +35,6 @@ see https://www.gnu.org/licenses/.  */
 
 #include "config.h"
 
-#if ! HAVE_VSNPRINTF   /* only need this file if we don't have vsnprintf */
-
-
 #define _GNU_SOURCE    /* for strnlen prototype */
 
 #include <stdarg.h>
@@ -53,19 +50,19 @@ see https://www.gnu.org/licenses/.  */
 
 #if HAVE_INTTYPES_H
 # include <inttypes.h> /* for intmax_t */
-#else
-# if HAVE_STDINT_H
-#  include <stdint.h>
-# endif
+#endif
+#if HAVE_STDINT_H
+# include <stdint.h>
 #endif
 
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h> /* for quad_t */
 #endif
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
+
+#if ! HAVE_VSNPRINTF   /* only need this file if we don't have vsnprintf */
 
 /* Autoconf notes that AIX 4.3 has a broken strnlen, but fortunately it
    doesn't affect us since __gmp_replacement_vsnprintf is not required on
@@ -244,7 +241,7 @@ __gmp_replacement_vsnprintf (char *buf, size_t buf_size,
 	      }
 	    else
 	      (void) va_arg (ap, double);
-	    break;
+	    goto next;
 
 	  case 'f':
 	    /* Requested decimals, sign and point, and a margin for error,
@@ -265,7 +262,29 @@ __gmp_replacement_vsnprintf (char *buf, size_t buf_size,
 		(void) va_arg (ap, double);
 		total_width += double_digits;
 	      }
-	    break;
+	    goto next;
+
+	  case 'A':
+	  case 'a':
+	    /* 6 for the 2 signs, 0x, point and p.
+	     * The exponent is decimal, the rest hexa, pretend everything is
+	     * the exponent. The right factor is more like 2.4.
+	     * + 2 extra margin for error.
+	     * prec + width are added later. */
+	    total_width += 6 + floating_sizeof * 3 + 2;
+	    if (type == 'L')
+	      {
+#if HAVE_LONG_DOUBLE
+		(void) va_arg (ap, long double);
+#else
+		ASSERT_FAIL (long double not available);
+#endif
+	      }
+	    else
+	      {
+		(void) va_arg (ap, double);
+	      }
+	    goto next;
 
 	  case 'h':  /* short or char */
 	  case 'j':  /* intmax_t */
@@ -367,23 +386,21 @@ __gmp_replacement_vsnprintf (char *buf, size_t buf_size,
 
   if (total_width <= buf_size)
     {
-      vsprintf (buf, orig_fmt, orig_ap);
-      len = strlen (buf);
+      len = vsprintf (buf, orig_fmt, orig_ap);
     }
   else
     {
       char  *s;
 
       s = __GMP_ALLOCATE_FUNC_TYPE (total_width, char);
-      vsprintf (s, orig_fmt, orig_ap);
-      len = strlen (s);
+      len = vsprintf (s, orig_fmt, orig_ap);
       if (buf_size != 0)
 	{
 	  size_t  copylen = MIN (len, buf_size-1);
 	  memcpy (buf, s, copylen);
 	  buf[copylen] = '\0';
 	}
-      (*__gmp_free_func) (s, total_width);
+      __GMP_FREE_FUNC_TYPE (s, total_width, char);
     }
 
   /* If total_width was somehow wrong then chances are we've already

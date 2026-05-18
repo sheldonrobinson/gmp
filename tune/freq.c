@@ -96,15 +96,9 @@ see https://www.gnu.org/licenses/.  */
 #include <sys/sysctl.h>  /* for sysctlbyname() */
 #endif
 
-#if TIME_WITH_SYS_TIME
+#include <time.h>
+#if HAVE_SYS_TIME_H
 # include <sys/time.h>  /* for struct timeval */
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -137,7 +131,6 @@ see https://www.gnu.org/licenses/.  */
 #undef MAX
 #endif
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 #include "speed.h"

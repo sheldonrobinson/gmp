@@ -30,11 +30,10 @@ see https://www.gnu.org/licenses/.  */
 
 #include <stdarg.h>
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 void
-gmp_randinit (gmp_randstate_t rstate, gmp_randalg_t alg, ...)
+gmp_randinit (gmp_randstate_ptr rstate, gmp_randalg_t alg, ...)
 {
   va_list ap;
   va_start (ap, alg);

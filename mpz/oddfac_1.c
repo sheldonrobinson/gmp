@@ -7,7 +7,7 @@ IT IS ONLY SAFE TO REACH IT THROUGH DOCUMENTED INTERFACES.
 IN FACT, IT IS ALMOST GUARANTEED THAT IT WILL CHANGE OR
 DISAPPEAR IN A FUTURE GNU MP RELEASE.
 
-Copyright 2010-2012 Free Software Foundation, Inc.
+Copyright 2010-2012, 2015-2017, 2020, 2021 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -35,7 +35,6 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
 
@@ -62,31 +61,32 @@ see https://www.gnu.org/licenses/.  */
       (PR) *= (P);						\
   } while (0)
 
-#define LOOP_ON_SIEVE_CONTINUE(prime,end,sieve)			\
+#define LOOP_ON_SIEVE_CONTINUE(prime,end)			\
     __max_i = (end);						\
 								\
     do {							\
       ++__i;							\
-      if (((sieve)[__index] & __mask) == 0)			\
+      if ((*__sieve & __mask) == 0)				\
 	{							\
-	  (prime) = id_to_n(__i)
+	  mp_limb_t prime;					\
+	  prime = id_to_n(__i)
 
 #define LOOP_ON_SIEVE_BEGIN(prime,start,end,off,sieve)		\
   do {								\
-    mp_limb_t __mask, __index, __max_i, __i;			\
+    mp_limb_t __mask, *__sieve, __max_i, __i;			\
 								\
     __i = (start)-(off);					\
-    __index = __i / GMP_LIMB_BITS;				\
+    __sieve = (sieve) + __i / GMP_LIMB_BITS;			\
     __mask = CNST_LIMB(1) << (__i % GMP_LIMB_BITS);		\
     __i += (off);						\
 								\
-    LOOP_ON_SIEVE_CONTINUE(prime,end,sieve)
+    LOOP_ON_SIEVE_CONTINUE(prime,end)
 
 #define LOOP_ON_SIEVE_STOP					\
 	}							\
       __mask = __mask << 1 | __mask >> (GMP_LIMB_BITS-1);	\
-      __index += __mask & 1;					\
-    }  while (__i <= __max_i)					\
+      __sieve += __mask & 1;					\
+    }  while (__i <= __max_i)
 
 #define LOOP_ON_SIEVE_END					\
     LOOP_ON_SIEVE_STOP;						\
@@ -115,20 +115,24 @@ primesieve_size (mp_limb_t n) { return n_to_bit(n) / GMP_LIMB_BITS + 1; }
 #endif
 
 /*********************************************************/
-/* Section mswing: 2-multiswing factorial                 */
+/* Section mswing: 2-multiswing factorial                */
 /*********************************************************/
 
-/* Returns an approximation of the sqare root of x.  *
- * It gives: x <= limb_apprsqrt (x) ^ 2 < x * 9/4    */
+/* Returns an approximation of the sqare root of x.
+ * It gives:
+ *   limb_apprsqrt (x) ^ 2 <= x < (limb_apprsqrt (x)+1) ^ 2
+ * or
+ *   x <= limb_apprsqrt (x) ^ 2 <= x * 9/8
+ */
 static mp_limb_t
 limb_apprsqrt (mp_limb_t x)
 {
   int s;
 
   ASSERT (x > 2);
-  count_leading_zeros (s, x - 1);
-  s = GMP_LIMB_BITS - 1 - s;
-  return (CNST_LIMB(1) << (s >> 1)) + (CNST_LIMB(1) << ((s - 1) >> 1));
+  count_leading_zeros (s, x);
+  s = (GMP_LIMB_BITS - s) >> 1;
+  return ((CNST_LIMB(1) << (s - 1)) + (x >> 1 >> s));
 }
 
 #if 0
@@ -189,7 +193,7 @@ mpz_2multiswing_1 (mpz_ptr x, mp_limb_t n, mp_ptr sieve, mp_ptr factors)
   mp_limb_t prod, max_prod;
   mp_size_t j;
 
-  ASSERT (n >= 26);
+  ASSERT (n > 25);
 
   j = 0;
   prod  = -(n & 1);
@@ -203,40 +207,30 @@ mpz_2multiswing_1 (mpz_ptr x, mp_limb_t n, mp_ptr sieve, mp_ptr factors)
 
   /* Swing primes from 5 to n/3 */
   {
-    mp_limb_t s;
+    mp_limb_t s, l_max_prod;
 
-    {
-      mp_limb_t prime;
-
-      s = limb_apprsqrt(n);
-      ASSERT (s >= 5);
-      s = n_to_bit (s);
-      LOOP_ON_SIEVE_BEGIN (prime, n_to_bit (5), s, 0,sieve);
-      SWING_A_PRIME (prime, n, prod, max_prod, factors, j);
-      LOOP_ON_SIEVE_END;
-      s++;
-    }
+    s = limb_apprsqrt(n);
+    ASSERT (s >= 5);
+    s = n_to_bit (s);
+    ASSERT (bit_to_n (s+1) * bit_to_n (s+1) > n);
+    ASSERT (s < n_to_bit (n / 3));
+    LOOP_ON_SIEVE_BEGIN (prime, n_to_bit (5), s, 0,sieve);
+    SWING_A_PRIME (prime, n, prod, max_prod, factors, j);
+    LOOP_ON_SIEVE_STOP;
 
     ASSERT (max_prod <= GMP_NUMB_MAX / 3);
-    ASSERT (bit_to_n (s) * bit_to_n (s) > n);
-    ASSERT (s <= n_to_bit (n / 3));
-    {
-      mp_limb_t prime;
-      mp_limb_t l_max_prod = max_prod * 3;
 
-      LOOP_ON_SIEVE_BEGIN (prime, s, n_to_bit (n/3), 0, sieve);
-      SH_SWING_A_PRIME (prime, n, prod, l_max_prod, factors, j);
-      LOOP_ON_SIEVE_END;
-    }
+    l_max_prod = max_prod * 3;
+
+    LOOP_ON_SIEVE_CONTINUE (prime, n_to_bit (n/3));
+    SH_SWING_A_PRIME (prime, n, prod, l_max_prod, factors, j);
+    LOOP_ON_SIEVE_END;
   }
 
   /* Store primes from (n+1)/2 to n */
-  {
-    mp_limb_t prime;
-    LOOP_ON_SIEVE_BEGIN (prime, n_to_bit (n >> 1) + 1, n_to_bit (n), 0,sieve);
-    FACTOR_LIST_STORE (prime, prod, max_prod, factors, j);
-    LOOP_ON_SIEVE_END;
-  }
+  LOOP_ON_SIEVE_BEGIN (prime, n_to_bit (n >> 1) + 1, n_to_bit (n), 0,sieve);
+  FACTOR_LIST_STORE (prime, prod, max_prod, factors, j);
+  LOOP_ON_SIEVE_END;
 
   if (LIKELY (j != 0))
     {
@@ -245,6 +239,7 @@ mpz_2multiswing_1 (mpz_ptr x, mp_limb_t n, mp_ptr sieve, mp_ptr factors)
     }
   else
     {
+      ASSERT (ALLOC (x) > 0);
       PTR (x)[0] = prod;
       SIZ (x) = 1;
     }
@@ -262,10 +257,12 @@ mpz_2multiswing_1 (mpz_ptr x, mp_limb_t n, mp_ptr sieve, mp_ptr factors)
 /* Section oddfac: odd factorial, needed also by binomial*/
 /*********************************************************/
 
+/* FIXME: refine che following estimate. */
+
 #if TUNE_PROGRAM_BUILD
-#define FACTORS_PER_LIMB (GMP_NUMB_BITS / (LOG2C(FAC_DSC_THRESHOLD_LIMIT-1)+1))
+#define FACTORS_PER_LIMB (GMP_NUMB_BITS * 2 / (LOG2C(FAC_DSC_THRESHOLD_LIMIT*FAC_DSC_THRESHOLD_LIMIT-1)+1) - 1)
 #else
-#define FACTORS_PER_LIMB (GMP_NUMB_BITS / (LOG2C(FAC_DSC_THRESHOLD-1)+1))
+#define FACTORS_PER_LIMB (GMP_NUMB_BITS * 2 / (LOG2C(FAC_DSC_THRESHOLD*FAC_DSC_THRESHOLD-1)+1) - 1)
 #endif
 
 /* mpz_oddfac_1 computes the odd part of the factorial of the
@@ -286,11 +283,11 @@ void
 mpz_oddfac_1 (mpz_ptr x, mp_limb_t n, unsigned flag)
 {
   ASSERT (n <= GMP_NUMB_MAX);
-  ASSERT (flag == 0 || (flag == 1 && n > ODD_FACTORIAL_TABLE_LIMIT && ABOVE_THRESHOLD (n, FAC_DSC_THRESHOLD)));
+  ASSERT (flag == 0 || (flag == 1 && n > ODD_DOUBLEFACTORIAL_TABLE_LIMIT + 1 && ABOVE_THRESHOLD (n, FAC_DSC_THRESHOLD)));
 
   if (n <= ODD_FACTORIAL_TABLE_LIMIT)
     {
-      PTR (x)[0] = __gmp_oddfac_table[n];
+      MPZ_NEWALLOC (x, 1)[0] = __gmp_oddfac_table[n];
       SIZ (x) = 1;
     }
   else if (n <= ODD_DOUBLEFACTORIAL_TABLE_LIMIT + 1)
@@ -309,7 +306,7 @@ mpz_oddfac_1 (mpz_ptr x, mp_limb_t n, unsigned flag)
       s = 0;
       {
 	mp_limb_t tn;
-	mp_limb_t prod, max_prod, i;
+	mp_limb_t prod, max_prod;
 	mp_size_t j;
 	TMP_SDECL;
 
@@ -330,20 +327,31 @@ mpz_oddfac_1 (mpz_ptr x, mp_limb_t n, unsigned flag)
 
 	prod = 1;
 #if TUNE_PROGRAM_BUILD
-	max_prod = GMP_NUMB_MAX / FAC_DSC_THRESHOLD_LIMIT;
+	max_prod = GMP_NUMB_MAX / (FAC_DSC_THRESHOLD_LIMIT * FAC_DSC_THRESHOLD_LIMIT);
 #else
-	max_prod = GMP_NUMB_MAX / FAC_DSC_THRESHOLD;
+	max_prod = GMP_NUMB_MAX / (FAC_DSC_THRESHOLD * FAC_DSC_THRESHOLD);
 #endif
 
 	ASSERT (tn > ODD_DOUBLEFACTORIAL_TABLE_LIMIT + 1);
 	do {
-	  i = ODD_DOUBLEFACTORIAL_TABLE_LIMIT + 2;
 	  factors[j++] = ODD_DOUBLEFACTORIAL_TABLE_MAX;
-	  do {
-	    FACTOR_LIST_STORE (i, prod, max_prod, factors, j);
-	    i += 2;
-	  } while (i <= tn);
-	  max_prod <<= 1;
+	  mp_limb_t diff = (tn - ODD_DOUBLEFACTORIAL_TABLE_LIMIT) & -CNST_LIMB (2);
+	  if ((diff & 2) != 0)
+	    {
+	      FACTOR_LIST_STORE (ODD_DOUBLEFACTORIAL_TABLE_LIMIT + diff, prod, max_prod, factors, j);
+	      diff -= 2;
+	    }
+	  if (diff != 0)
+	    {
+	      mp_limb_t fac = (ODD_DOUBLEFACTORIAL_TABLE_LIMIT + 2) *
+		(ODD_DOUBLEFACTORIAL_TABLE_LIMIT + diff);
+	      do {
+		FACTOR_LIST_STORE (fac, prod, max_prod, factors, j);
+		diff -= 4;
+		fac += diff * 2;
+	      } while (diff != 0);
+	    }
+	  max_prod <<= 2;
 	  tn >>= 1;
 	} while (tn > ODD_DOUBLEFACTORIAL_TABLE_LIMIT + 1);
 
@@ -415,8 +423,8 @@ mpz_oddfac_1 (mpz_ptr x, mp_limb_t n, unsigned flag)
 	    ASSERT (ns <= size);
 	    cy = mpn_mul (px, square, size, PTR(mswing), ns); /* n!= n$ * floor(n/2)!^2 */
 
-	    TMP_FREE;
 	    SIZ(x) = nx - (cy == 0);
+	    TMP_FREE;
 	  } while (s != 0);
 	  TMP_FREE;
 	}

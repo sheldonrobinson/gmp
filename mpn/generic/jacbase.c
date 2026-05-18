@@ -3,7 +3,7 @@
    THIS INTERFACE IS PRELIMINARY AND MIGHT DISAPPEAR OR BE SUBJECT TO
    INCOMPATIBLE CHANGES IN A FUTURE RELEASE OF GMP.
 
-Copyright 1999-2002, 2010 Free Software Foundation, Inc.
+Copyright 1999-2002, 2010, 2020 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -31,7 +31,6 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
 
@@ -236,7 +235,7 @@ mpn_jacobi_base (mp_limb_t a, mp_limb_t b, int bit)
       bit ^= c & (b ^ (b >> 1));
       a >>= c;
     }
-  while (b > 0);
+  while (a > 0);
 
   return 1-2*(bit & 1);
 }

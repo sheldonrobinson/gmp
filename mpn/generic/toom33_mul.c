@@ -8,7 +8,7 @@
    SAFE TO REACH IT THROUGH DOCUMENTED INTERFACES.  IN FACT, IT IS ALMOST
    GUARANTEED THAT IT WILL CHANGE OR DISAPPEAR IN A FUTURE GNU MP RELEASE.
 
-Copyright 2006-2008, 2010, 2012 Free Software Foundation, Inc.
+Copyright 2006-2008, 2010, 2012, 2015, 2021 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -37,7 +37,6 @@ GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 /* Evaluate in: -1, 0, +1, +2, +inf
@@ -263,7 +262,8 @@ mpn_toom33_mul (mp_ptr pp,
     cy += mpn_add_n (vm1 + n, vm1 + n, asm1, n);
   vm1[2 * n] = cy;
 #else
-  TOOM33_MUL_N_REC (vm1, asm1, bsm1, n + 1, scratch_out);
+  vm1[2 * n] = 0;
+  TOOM33_MUL_N_REC (vm1, asm1, bsm1, n + (bsm1[n] | asm1[n]), scratch_out);
 #endif
 
   TOOM33_MUL_N_REC (v2, as2, bs2, n + 1, scratch_out);	/* v2, 2n+1 limbs */
@@ -283,8 +283,8 @@ mpn_toom33_mul (mp_ptr pp,
     }
   else if (as1[n] != 0)
     {
-#if HAVE_NATIVE_mpn_addlsh1_n
-      cy = 2 * bs1[n] + mpn_addlsh1_n (v1 + n, v1 + n, bs1, n);
+#if HAVE_NATIVE_mpn_addlsh1_n_ip1
+      cy = 2 * bs1[n] + mpn_addlsh1_n_ip1 (v1 + n, bs1, n);
 #else
       cy = 2 * bs1[n] + mpn_addmul_1 (v1 + n, bs1, n, CNST_LIMB(2));
 #endif
@@ -297,8 +297,8 @@ mpn_toom33_mul (mp_ptr pp,
     }
   else if (bs1[n] != 0)
     {
-#if HAVE_NATIVE_mpn_addlsh1_n
-      cy += mpn_addlsh1_n (v1 + n, v1 + n, as1, n);
+#if HAVE_NATIVE_mpn_addlsh1_n_ip1
+      cy += mpn_addlsh1_n_ip1 (v1 + n, as1, n);
 #else
       cy += mpn_addmul_1 (v1 + n, as1, n, CNST_LIMB(2));
 #endif

@@ -28,7 +28,6 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 
@@ -37,7 +36,7 @@ see https://www.gnu.org/licenses/.  */
    So rprec+1 == dsize - xsize + 1, hence dprec = rprec+xsize.  */
 
 void
-mpf_reldiff (mpf_t rdiff, mpf_srcptr x, mpf_srcptr y)
+mpf_reldiff (mpf_ptr rdiff, mpf_srcptr x, mpf_srcptr y)
 {
   if (UNLIKELY (SIZ(x) == 0))
     {

@@ -14,7 +14,7 @@
 This manual describes how to install and use the GNU multiple precision
 arithmetic library, version @value{VERSION}.
 
-Copyright 1991, 1993-2016 Free Software Foundation, Inc.
+Copyright 1991, 1993-2016, 2018-2020 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document under
 the terms of the GNU Free Documentation License, Version 1.3 or any later
@@ -25,7 +25,7 @@ software''.  A copy of the license is included in
 @ref{GNU Free Documentation License}.
 @end copying
 @c  Note the @ref above must be on one line, a line break in an @ref within
-@c  @copying will bomb in recent texinfo.tex (eg. 2004-04-07.08 which comes
+@c  @copying will bomb in recent texinfo.tex (e.g. 2004-04-07.08 which comes
 @c  with texinfo 4.7), with messages about missing @endcsname.
 
 
@@ -59,7 +59,7 @@ software''.  A copy of the license is included in
 @c  HTML:
 @c
 @c  Nothing special is done for links to external manuals, they just come out
-@c  in the usual makeinfo style, eg. "../libc/Locales.html".  If you have
+@c  in the usual makeinfo style, e.g. "../libc/Locales.html".  If you have
 @c  local copies of such manuals then this is a good thing, if not then you
 @c  may want to search-and-replace to some online source.
 @c
@@ -148,9 +148,8 @@ How to install and use the GNU multiple precision arithmetic library, version @v
 @end menu
 
 
-@c  @m{T,N} is $T$ in tex or @math{N} otherwise.  This is an easy way to give
-@c  different forms for math in tex and info.  Commas in N or T don't work,
-@c  but @C{} can be used instead.  \, works in info but not in tex.
+@c  @m{T,N} is $T$ in tex or @math{N} otherwise.  Commas in N or T don't work,
+@c  but @C{} can be used instead.
 @iftex
 @macro m {T,N}
 @tex$\T\$@end tex
@@ -161,6 +160,27 @@ How to install and use the GNU multiple precision arithmetic library, version @v
 @math{\N\}
 @end macro
 @end ifnottex
+
+@c  @mm{T,N} is $T$ tex and html and @math{N} in info.  Commas in N or T don't
+@c  work, but @C{} can be used instead.
+@iftex
+@macro mm {T,N}
+@tex$\T\$@end tex
+@end macro
+@end iftex
+
+@ifhtml
+@macro mm {T,N}
+@math{\T\}
+@end macro
+@end ifhtml
+
+@ifinfo
+@macro mm {T,N}
+@math{\N\}
+@end macro
+@end ifinfo
+
 
 @macro C {}
 ,
@@ -390,7 +410,7 @@ x
 @c  on printing a particular section, GMPreftop gives just the title.
 @c
 @c  The texinfo manual recommends putting a likely section name in references
-@c  like this, eg. "Introduction", but it seems better to just give the title.
+@c  like this, e.g. "Introduction", but it seems better to just give the title.
 @c
 @iftex
 @macro GMPreftop{info,title}
@@ -424,24 +444,24 @@ domain; it is copyrighted and there are restrictions on its distribution, but
 these restrictions are designed to permit everything that a good cooperating
 citizen would want to do.  What is not allowed is to try to prevent others
 from further sharing any version of this library that they might get from
-you.@refill
+you.
 
 Specifically, we want to make sure that you have the right to give away copies
 of the library, that you receive source code or else can get it if you want
 it, that you can change this library or use pieces of it in new free programs,
-and that you know you can do these things.@refill
+and that you know you can do these things.
 
 To make sure that everyone has such rights, we have to forbid you to deprive
 anyone else of these rights.  For example, if you distribute copies of the GNU
 MP library, you must give the recipients all the rights that you have.  You
 must make sure that they, too, receive or can get the source code.  And you
-must tell them their rights.@refill
+must tell them their rights.
 
 Also, for our own protection, we must make certain that everyone finds out
 that there is no warranty for the GNU MP library.  If it is modified by
 someone else and passed on, we want their recipients to know that what they
 have is not what we distributed, so that any problems introduced by others
-will not reflect on our reputation.@refill
+will not reflect on our reputation.
 
 More precisely, the GNU MP library is dual licensed, under the conditions of
 the GNU Lesser General Public License version 3 (see
@@ -450,7 +470,7 @@ the GNU Lesser General Public License version 3 (see
 the additional option of applying later versions of these licenses. (The
 reason for this dual licensing is to make it possible to use the library with
 programs which are licensed under GPL version 2, but which for historical or
-other reasons do not allow use under later versions of the GPL).
+other reasons do not allow use under later versions of the GPL.)
 
 Programs which are not part of the library itself, such as demonstration
 programs and the GMP testsuite, are licensed under the terms of the GNU
@@ -482,13 +502,13 @@ There is assembly code for these CPUs:
 @cindex CPU types
 ARM Cortex-A9, Cortex-A15, and generic ARM,
 DEC Alpha 21064, 21164, and 21264,
-AMD K8 and K10 (sold under many brands, e.g. Athlon64, Phenom, Opteron)
+AMD K8 and K10 (sold under many brands, e.g. Athlon64, Phenom, Opteron),
 Bulldozer, and Bobcat,
 Intel Pentium, Pentium Pro/II/III, Pentium 4, Core2, Nehalem, Sandy bridge, Haswell, generic x86,
 Intel IA-64,
 Motorola/IBM PowerPC 32 and 64 such as POWER970, POWER5, POWER6, and POWER7,
 MIPS 32-bit and 64-bit,
-SPARC 32-bit ad 64-bit with special support for all UltraSPARC models.
+SPARC 32-bit and 64-bit with special support for all UltraSPARC models.
 There is also assembly code for many obsolete CPUs.
 
 
@@ -675,7 +695,7 @@ example @command{m68k-mac-linux-gnu-ranlib} is tried, then plain
 @command{ranlib}.  This makes it possible for a set of cross-compiling tools
 to co-exist with native tools.  The prefix is the argument to @samp{--host},
 and this can be an alias, such as @samp{m68k-linux}.  But note that tools
-don't have to be setup this way, it's enough to just have a @env{PATH} with a
+don't have to be set up this way, it's enough to just have a @env{PATH} with a
 suitable cross-compiling @command{cc} etc.
 
 Compiling for a different CPU in the same family as the build system is a form
@@ -725,7 +745,7 @@ Alpha:
 @nisamp{alphapca57},
 @nisamp{alphaev6},
 @nisamp{alphaev67},
-@nisamp{alphaev68}
+@nisamp{alphaev68},
 @nisamp{alphaev7}
 
 @item
@@ -1041,7 +1061,7 @@ Enable profiling support, in one of various styles, @pxref{Profiling}.
 @item @option{MPN_PATH}
 @cindex @code{MPN_PATH}
 Various assembly versions of each mpn subroutines are provided.  For a given
-CPU, a search is made though a path to choose a version of each.  For example
+CPU, a search is made through a path to choose a version of each.  For example
 @samp{sparcv8} has
 
 @example
@@ -1118,7 +1138,7 @@ Currently no attempt is made to follow whatever conventions a system has for
 installing library or header files built for a particular ABI@.  This will
 probably only matter when installing multiple builds of GMP, and it might be
 as simple as configuring with a special @samp{libdir}, or it might require
-more than that.  Note that builds for different ABIs need to done separately,
+more than that.  Note that builds for different ABIs need to be done separately,
 with a fresh @command{./configure} and @command{make} each.
 
 @sp 1
@@ -1187,7 +1207,7 @@ gcc [built for 2.0n]
 cc  +DA2.0 +e
 @end example
 
-Note that current versions of GCC (eg.@: 3.2) don't generate 64-bit
+Note that current versions of GCC (e.g.@: 3.2) don't generate 64-bit
 instructions for @code{long long} operations and so may be slower than for
 2.0w.  (The GMP assembly code is the same though.)
 
@@ -1249,7 +1269,7 @@ each.  The default is n32.
 @item @samp{ABI=o32}
 The o32 ABI is 32-bit pointers and integers, and no 64-bit operations.  GMP
 will be slower than in n32 or 64, this option only exists to support old
-compilers, eg.@: GCC 2.7.2.  Applications can be compiled with no special
+compilers, e.g.@: GCC 2.7.2.  Applications can be compiled with no special
 flags on an old compiler, or on a newer compiler with
 
 @example
@@ -1538,7 +1558,7 @@ system Cygwin, DJGPP and MINGW can be used.  All three are excellent ports of
 GCC and the various GNU tools.
 
 @display
-@uref{http://www.cygwin.com/}
+@uref{https://www.cygwin.com/}
 @uref{http://www.delorie.com/djgpp/}
 @uref{http://www.mingw.org/}
 @end display
@@ -1695,7 +1715,7 @@ script, it exits silently, having died writing a preamble to
 @file{config.log}.  Use @command{bash} 2.04 or higher.
 
 @samp{make all} was found to run out of memory during the final
-@file{libgmp.la} link on one system tested, despite having 64Mb available.
+@file{libgmp.la} link on one system tested, despite having 64MiB available.
 Running @samp{make libgmp.la} directly helped, perhaps recursing into the
 various subdirectories uses up memory.
 
@@ -1786,7 +1806,7 @@ operation.
 
 In particular for long-running GMP applications, and applications demanding
 extremely large numbers, building and running the @code{tuneup} program in the
-@file{tune} subdirectory, can be important.  For example,
+@file{tune} subdirectory can be important.  For example,
 
 @example
 cd tune
@@ -1840,7 +1860,9 @@ to be incompatible with future versions of GMP.}
 @cindex Include files
 @cindex @code{#include}
 All declarations needed to use GMP are collected in the include file
-@file{gmp.h}.  It is designed to work with both C and C++ compilers.
+@file{gmp.h}, except for the @ref{C++ Class Interface} which comes with its
+own separate header @file{gmpxx.h}.  @file{gmp.h} is designed to work with
+both C and C++ compilers.
 
 @example
 #include <gmp.h>
@@ -1848,7 +1870,7 @@ All declarations needed to use GMP are collected in the include file
 
 @cindex @code{stdio.h}
 Note however that prototypes for GMP functions with @code{FILE *} parameters
-are only provided if @code{<stdio.h>} is included too.
+are only provided if @code{<stdio.h>} is included before.
 
 @example
 #include <stdio.h>
@@ -1872,9 +1894,10 @@ gcc myprogram.c -lgmp
 @end example
 
 @cindex @code{libgmpxx}
-GMP C++ functions are in a separate @file{libgmpxx} library.  This is built
-and installed if C++ support has been enabled (@pxref{Build Options}).  For
-example,
+GMP C++ functions are in a separate @file{libgmpxx} library, including the
+@ref{C++ Class Interface} but also @ref{C++ Formatted Output} for regular
+GMP types.  This is built and installed if C++ support has been enabled
+(@pxref{Build Options}).  For example,
 
 @example
 g++ mycxxprog.cc -lgmpxx -lgmp
@@ -1962,6 +1985,60 @@ gmp_randstate_t rstate;
 Also, in general @code{mp_bitcnt_t} is used for bit counts and ranges, and
 @code{size_t} is used for byte or character counts.
 
+@sp 1
+
+@cindex Pointer types
+@tindex @code{mpz_ptr}
+@tindex @code{mpz_srcptr}
+@tindex @code{mpq_ptr}
+@tindex @code{mpq_srcptr}
+@tindex @code{mpf_ptr}
+@tindex @code{mpf_srcptr}
+@tindex @code{gmp_randstate_ptr}
+@tindex @code{gmp_randstate_srcptr}
+Internally, GMP data types such as @code{mpz_t} are defined as one-element
+arrays, whose element type is part of the GMP internals (@pxref{Internals}).
+
+When an array is used as a function argument in C, it is not passed by value,
+instead its value is a pointer to the first element. In C jargon, this is
+sometimes referred to as the array "decaying" to a pointer. For GMP types like
+@code{mpz_t}, that means that the function called gets a pointer to the
+caller's @code{mpz_t} value, which is why no explicit @code{&} operator is
+needed when passing output arguments (@pxref{Parameter Conventions}).
+
+GMP defines names for these pointer types, e.g., @code{mpz_ptr} corresponding
+to @code{mpz_t}, and @code{mpz_srcptr} corresponding to @code{const mpz_t}.
+Most functions don't need to use these pointer types directly; it works fine to
+declare a function using the @code{mpz_t} or @code{const mpz_t} as the argument
+types, the same "pointer decay" happens in the background regardless.
+
+Occasionally, it is useful to manipulate pointers directly, e.g., to
+conditionally swap @emph{references} to a function's inputs without changing
+the @emph{values} as seen by the caller, or returning a pointer to an
+@code{mpz_t} which is part of a larger structure. For these cases, the pointer
+types are necessary. And a @code{mpz_ptr} can be passed as argument to any GMP
+function declared to take an @code{mpz_t} argument.
+
+Their definition is equivalent to the following code, which is given for
+illustratory purposes only:
+
+@example
+    typedef foo_internal foo_t[1];
+    typedef foo_internal * foo_ptr;
+    typedef const foo_internal * foo_srcptr;
+@end example
+
+The following pointer types are defined by GMP:
+@itemize
+@item @code{mpz_ptr} for pointers to the element type in @code{mpz_t}
+@item @code{mpz_srcptr} for @code{const} pointers to the element type in @code{mpz_t}
+@item @code{mpq_ptr} for pointers to the element type in @code{mpq_t}
+@item @code{mpq_srcptr} for @code{const} pointers to the element type in @code{mpq_t}
+@item @code{mpf_ptr} for pointers to the element type in @code{mpf_t}
+@item @code{mpf_srcptr} for @code{const} pointers to the element type in @code{mpf_t}
+@item @code{gmp_randstate_ptr} for pointers to the element type in @code{gmp_randstate_t}
+@item @code{gmp_randstate_srcptr} for @code{const} pointers to the element type in @code{gmp_randstate_t}
+@end itemize
 
 @node Function Classes, Variable Conventions, Nomenclature and Types, GMP Basics
 @section Function Classes
@@ -1985,7 +2062,7 @@ Functions})
 @item
 Functions for floating-point arithmetic, with names beginning with
 @code{mpf_}.  The associated type is @code{mpf_t}.  There are about 70
-functions is this class.  (@pxref{Floating-point Functions})
+functions in this class.  (@pxref{Floating-point Functions})
 
 @item
 Fast low-level functions that operate on natural numbers.  These are used by
@@ -2007,8 +2084,7 @@ functions for generating random numbers.  (@pxref{Custom Allocation}, and
 @cindex Conventions for variables
 
 GMP functions generally have output arguments before input arguments.  This
-notation is by analogy with the assignment operator.  The BSD MP compatibility
-functions are exceptions, having the output arguments last.
+notation is by analogy with the assignment operator.
 
 GMP lets you use the same variable for both input and output in one call.  For
 example, the main function for integer multiplication, @code{mpz_mul}, can be
@@ -2050,6 +2126,18 @@ foo (void)
 @}
 @end example
 
+GMP types like @code{mpz_t} are implemented as one-element arrays of certain
+structures.  Declaring a variable creates an object with the fields GMP needs,
+but variables are normally manipulated by using the pointer to the
+object.  The appropriate pointer types (@ref{Nomenclature and Types}) may
+be used to explicitly manipulate the pointer.  For
+both behavior and efficiency reasons, it is discouraged to make copies of the
+GMP object itself (either directly or via aggregate objects containing such GMP
+objects).  If copies are done, all of them must be used read-only; using a copy
+as the output of some function will invalidate all the other copies.  Note that
+the actual fields in each @code{mpz_t} etc are for internal use only and should
+not be accessed directly by code that expects to be compatible with future GMP
+releases.
 
 @node Parameter Conventions, Memory Management, Variable Conventions, GMP Basics
 @section Parameter Conventions
@@ -2057,10 +2145,10 @@ foo (void)
 @cindex Conventions for parameters
 
 When a GMP variable is used as a function parameter, it's effectively a
-call-by-reference, meaning if the function stores a value there it will change
-the original in the caller.  Parameters which are input-only can be designated
-@code{const} to provoke a compiler error or warning on attempting to modify
-them.
+call-by-reference, meaning that when the function stores a value there it will
+change the original in the caller.  Parameters which are input-only can be
+designated @code{const} to provoke a compiler error or warning on attempting to
+modify them.
 
 When a function is going to return a GMP result, it should designate a
 parameter that it sets, like the library functions do.  More than one value
@@ -2093,17 +2181,20 @@ main (void)
 @}
 @end example
 
-@code{foo} works even if the mainline passes the same variable for
+Our function @code{foo} works even if its caller passes the same variable for
 @code{param} and @code{result}, just like the library functions.  But
 sometimes it's tricky to make that work, and an application might not want to
 bother supporting that sort of thing.
 
-For interest, the GMP types @code{mpz_t} etc are implemented as one-element
-arrays of certain structures.  This is why declaring a variable creates an
-object with the fields GMP needs, but then using it as a parameter passes a
-pointer to the object.  Note that the actual fields in each @code{mpz_t} etc
-are for internal use only and should not be accessed directly by code that
-expects to be compatible with future GMP releases.
+Since GMP types are implemented as one-element arrays, using a GMP variable as
+a parameter passes a pointer to the object. Hence the call-by-reference.
+A more explicit (and equivalent) prototype for our function @code{foo}
+could be:
+
+@example
+void foo (mpz_ptr result, mpz_srcptr param, unsigned long n);
+@end example
+
 
 
 @need 1000
@@ -2355,7 +2446,7 @@ As an aside, consideration has been given at various times to some sort of
 expression evaluation within the main GMP library.  Going beyond something
 minimal quickly leads to matters like user-defined functions, looping, fixnums
 for control variables, etc, which are considered outside the scope of GMP
-(much closer to language interpreters or compilers, @xref{Language Bindings}.)
+(much closer to language interpreters or compilers, @xref{Language Bindings}).
 Something simple for program input convenience may yet be a possibility, a
 combination of the @file{expr} demo and the @file{pexpr} tree back-end
 perhaps.  But for now the above evaluators are offered as illustrations.
@@ -2417,7 +2508,7 @@ usually be very rare and testing every time would be wasteful.
 The @code{ui} functions and the small number of @code{si} functions exist for
 convenience and should be used where applicable.  But if for example an
 @code{mpz_t} contains a value that fits in an @code{unsigned long} there's no
-need extract it and call a @code{ui} function, just use the regular @code{mpz}
+need to extract it and call a @code{ui} function, just use the regular @code{mpz}
 function.
 
 @item In-Place Operations
@@ -2465,7 +2556,7 @@ it's zero (or a particular value).
 
 However when testing divisibility by several small integers, it's best to take
 a remainder modulo their product, to save multi-precision operations.  For
-instance to test whether a number is divisible by any of 23, 29 or 31 take a
+instance to test whether a number is divisible by 23, 29 or 31 take a
 remainder modulo @math{23@times{}29@times{}31 = 20677} and then test that.
 
 The division functions like @code{mpz_tdiv_q_ui} which give a quotient as well
@@ -2513,7 +2604,7 @@ mpz_submul (mpq_numref(q), mpq_denref(q), z);
 @cindex Number sequences
 Functions like @code{mpz_fac_ui}, @code{mpz_fib_ui} and @code{mpz_bin_uiui}
 are designed for calculating isolated values.  If a range of values is wanted
-it's probably best to call to get a starting point and iterate from there.
+it's probably best to get a starting point and iterate from there.
 
 @item Text Input/Output
 @cindex Text input/output
@@ -2567,13 +2658,9 @@ Reference Manual}, or @samp{man 3 malloc}.  Other possibilities, in no
 particular order, include
 
 @display
-@uref{http://www.inf.ethz.ch/personal/biere/projects/ccmalloc/}
+@uref{http://cs.ecs.baylor.edu/~donahoo/tools/ccmalloc/}
 @uref{http://dmalloc.com/}
-@uref{http://www.perens.com/FreeSoftware/} @ (electric fence)
-@uref{http://packages.debian.org/stable/devel/fda}
-@uref{http://www.gnupdate.org/components/leakbug/}
-@uref{http://people.redhat.com/~otaylor/memprof/}
-@uref{http://www.cbmamiga.demon.co.uk/mpatrol/}
+@uref{https://wiki.gnome.org/Apps/MemProf}
 @end display
 
 The GMP default allocation routines in @file{memory.c} also have a simple
@@ -2772,7 +2859,7 @@ support from an external library, such as
 @cindex FunctionCheck
 @cindex fnccheck
 @display
-@uref{http://sourceforge.net/projects/fnccheck/}
+@uref{https://sourceforge.net/projects/fnccheck/}
 @end display
 
 This should be included in @samp{LIBS} during the GMP configure so that test
@@ -2882,9 +2969,10 @@ much to ask you to report the bugs you find.
 
 Before you report a bug, check it's not already addressed in @ref{Known Build
 Problems}, or perhaps @ref{Notes for Particular Systems}.  You may also want
-to check @uref{https://gmplib.org/} for patches for this release.
+to check @uref{https://gmplib.org/} for patches for this release, or try a
+recent snapshot from @uref{https://gmplib.org/download/snapshot/}.
 
-Please include the following in any report,
+Please include the following in any report:
 
 @itemize @bullet
 @item
@@ -3078,8 +3166,8 @@ characters are used: @code{0x} and @code{0X} for hexadecimal, @code{0b} and
 @code{0B} for binary, @code{0} for octal, or decimal otherwise.
 
 For bases up to 36, case is ignored; upper-case and lower-case letters have
-the same value.  For bases 37 to 62, upper-case letter represent the usual
-10..35 while lower-case letter represent 36..61.
+the same value.  For bases 37 to 62, upper-case letters represent the usual
+10..35 while lower-case letters represent 36..61.
 
 This function returns 0 if the entire string is a valid number in base
 @var{base}.  Otherwise it returns @minus{}1.
@@ -3279,7 +3367,7 @@ Set @var{rop} to the absolute value of @var{op}.
 
 Division is undefined if the divisor is zero.  Passing a zero divisor to the
 division or modulo functions (including the modular powering functions
-@code{mpz_powm} and @code{mpz_powm_ui}), will cause an intentional division by
+@code{mpz_powm} and @code{mpz_powm_ui}) will cause an intentional division by
 zero.  This lets a program handle arithmetic exceptions in these functions the
 same way as for normal C @code{int} arithmetic.
 
@@ -3366,7 +3454,7 @@ round the same as the other functions.
 
 For positive @var{n} both @code{mpz_fdiv_q_2exp} and @code{mpz_tdiv_q_2exp}
 are simple bitwise right shifts.  For negative @var{n}, @code{mpz_fdiv_q_2exp}
-is effectively an arithmetic right shift treating @var{n} as twos complement
+is effectively an arithmetic right shift treating @var{n} as two's complement
 the same as the bitwise logical functions do, whereas @code{mpz_tdiv_q_2exp}
 effectively treats @var{n} as sign and magnitude.
 @end deftypefun
@@ -3433,9 +3521,10 @@ only when exactly equal.
 Set @var{rop} to @m{base^{exp} \bmod mod, (@var{base} raised to @var{exp})
 modulo @var{mod}}.
 
-Negative @var{exp} is supported if an inverse @math{@var{base}^@W{-1} @bmod
-@var{mod}} exists (see @code{mpz_invert} in @ref{Number Theoretic Functions}).
-If an inverse doesn't exist then a divide by zero is raised.
+Negative @var{exp} is supported if the inverse @mm{@var{base}@sup{-1} @bmod
+@var{mod}, @var{base}^(-1) @bmod @var{mod}} exists (see @code{mpz_invert} in
+@ref{Number Theoretic Functions}).  If an inverse doesn't exist then a divide
+by zero is raised.
 @end deftypefun
 
 @deftypefun void mpz_powm_sec (mpz_t @var{rop}, const mpz_t @var{base}, const mpz_t @var{exp}, const mpz_t @var{mod})
@@ -3526,19 +3615,34 @@ Determine whether @var{n} is prime.  Return 2 if @var{n} is definitely prime,
 return 1 if @var{n} is probably prime (without being certain), or return 0 if
 @var{n} is definitely non-prime.
 
-This function performs some trial divisions, then @var{reps} Miller-Rabin
-probabilistic primality tests.  A higher @var{reps} value will reduce the
-chances of a non-prime being identified as ``probably prime''.  A composite
-number will be identified as a prime with a probability of less than
-@m{4^{-reps},4^(-@var{reps})}.  Reasonable values of @var{reps} are between 15
-and 50.
+This function performs some trial divisions, a Baillie-PSW probable prime
+test, then @var{reps-24} Miller-Rabin probabilistic primality tests.  A
+higher @var{reps} value will reduce the chances of a non-prime being
+identified as ``probably prime''.  A composite number will be identified as a
+prime with an asymptotic probability of less than @m{4^{-reps},4^(-@var{reps})}.
+Reasonable values of @var{reps} are between 15 and 50.
+
+GMP versions up to and including 6.1.2 did not use the Baillie-PSW
+primality test. In those older versions of GMP, this function performed
+@var{reps} Miller-Rabin tests.
 @end deftypefun
 
 @deftypefun void mpz_nextprime (mpz_t @var{rop}, const mpz_t @var{op})
 @cindex Next prime function
 Set @var{rop} to the next prime greater than @var{op}.
+@end deftypefun
 
-This function uses a probabilistic algorithm to identify primes.  For
+@deftypefun int mpz_prevprime (mpz_t @var{rop}, const mpz_t @var{op})
+@cindex Previous prime function
+Set @var{rop} to the greatest prime less than @var{op}.
+
+If a previous prime doesn't exist (i.e. @var{op} < 3), rop is unchanged and
+0 is returned.
+
+Return 1 if @var{rop} is a probably prime, and 2 if @var{rop} is definitely
+prime.
+
+These functions use a probabilistic algorithm to identify primes.  For
 practical purposes it's adequate, the chance of a composite passing will be
 extremely small.
 @end deftypefun
@@ -3598,7 +3702,7 @@ In all cases, @math{@var{s} = 0} if and only if @math{@var{g} =
 @GMPabs{@var{b}}}, i.e., if @var{b} divides @var{a} or @math{@var{a} = @var{b}
 = 0}.
 
-If @var{t} is @code{NULL} then that value is not computed.
+If @var{t} or @var{g} is @code{NULL} then that value is not computed.
 @end deftypefun
 
 @deftypefun void mpz_lcm (mpz_t @var{rop}, const mpz_t @var{op1}, const mpz_t @var{op2})
@@ -3692,7 +3796,7 @@ part G.
 @deftypefun void mpz_fib_ui (mpz_t @var{fn}, unsigned long int @var{n})
 @deftypefunx void mpz_fib2_ui (mpz_t @var{fn}, mpz_t @var{fnsub1}, unsigned long int @var{n})
 @cindex Fibonacci sequence functions
-@code{mpz_fib_ui} sets @var{fn} to to @m{F_n,F[n]}, the @var{n}'th Fibonacci
+@code{mpz_fib_ui} sets @var{fn} to @m{F_n,F[n]}, the @var{n}th Fibonacci
 number.  @code{mpz_fib2_ui} sets @var{fn} to @m{F_n,F[n]}, and @var{fnsub1} to
 @m{F_{n-1},F[n-1]}.
 
@@ -3705,7 +3809,7 @@ similar.
 @deftypefun void mpz_lucnum_ui (mpz_t @var{ln}, unsigned long int @var{n})
 @deftypefunx void mpz_lucnum2_ui (mpz_t @var{ln}, mpz_t @var{lnsub1}, unsigned long int @var{n})
 @cindex Lucas number functions
-@code{mpz_lucnum_ui} sets @var{ln} to to @m{L_n,L[n]}, the @var{n}'th Lucas
+@code{mpz_lucnum_ui} sets @var{ln} to @m{L_n,L[n]}, the @var{n}th Lucas
 number.  @code{mpz_lucnum2_ui} sets @var{ln} to @m{L_n,L[n]}, and @var{lnsub1}
 to @m{L_{n-1},L[n-1]}.
 
@@ -3771,7 +3875,7 @@ multiple times.
 @cindex Integer logical functions
 @cindex Integer bit manipulation functions
 
-These functions behave as if twos complement arithmetic were used (although
+These functions behave as if two's complement arithmetic were used (although
 sign-magnitude is the actual implementation).  The least significant bit is
 number 0.
 
@@ -3838,6 +3942,9 @@ Complement bit @var{bit_index} in @var{rop}.
 Test bit @var{bit_index} in @var{op} and return 0 or 1 accordingly.
 @end deftypefun
 
+Shifting is also possible using multiplication (@ref{Integer Arithmetic}) and
+division (@ref{Integer Division}), in particular the @code{2exp} functions.
+
 @node I/O of Integers, Integer Random Numbers, Integer Logic and Bit Fiddling, Integer Functions
 @comment  node-name,  next,  previous,  up
 @section Input and Output Functions
@@ -3879,8 +3986,8 @@ characters are used: @code{0x} and @code{0X} for hexadecimal, @code{0b} and
 @code{0B} for binary, @code{0} for octal, or decimal otherwise.
 
 For bases up to 36, case is ignored; upper-case and lower-case letters have
-the same value.  For bases 37 to 62, upper-case letter represent the usual
-10..35 while lower-case letter represent 36..61.
+the same value.  For bases 37 to 62, upper-case letters represent the usual
+10..35 while lower-case letters represent 36..61.
 
 Return the number of bytes read, or if an error occurred, return 0.
 @end deftypefun
@@ -3917,15 +4024,15 @@ machines.
 @cindex Integer random number functions
 @cindex Random number functions
 
-The random number functions of GMP come in two groups; older function
+The random number functions of GMP come in two groups; older functions
 that rely on a global state, and newer functions that accept a state
 parameter that is read and modified.  Please see the @ref{Random Number
 Functions} for more information on how to use and not to use random
 number functions.
 
 @deftypefun void mpz_urandomb (mpz_t @var{rop}, gmp_randstate_t @var{state}, mp_bitcnt_t @var{n})
-Generate a uniformly distributed random integer in the range 0 to @m{2^n-1,
-2^@var{n}@minus{}1}, inclusive.
+Generate a uniformly distributed random integer in the range 0 to
+@mm{2@sup{n}-1, 2^@var{n}@minus{}1}, inclusive.
 
 The variable @var{state} must be initialized by calling one of the
 @code{gmp_randinit} functions (@ref{Random State Initialization}) before
@@ -3946,7 +4053,8 @@ Generate a random integer with long strings of zeros and ones in the
 binary representation.  Useful for testing functions and algorithms,
 since this kind of random numbers have proven to be more likely to
 trigger corner-case bugs.  The random number will be in the range
-@m{2^{n-1}, 2^@var{n@minus{}1}} to @m{2^n-1, 2^@var{n}@minus{}1}, inclusive.
+@mm{2@sup{n-1}, 2^(@var{n}@minus{}1)} to @mm{2@sup{n}-1,
+2^@var{n}@minus{}1}, inclusive.
 
 The variable @var{state} must be initialized by calling one of the
 @code{gmp_randinit} functions (@ref{Random State Initialization})
@@ -4153,7 +4261,8 @@ only.
 Return a pointer to the limb array, intended for write access. The array is
 reallocated as needed, to make room for @var{n} limbs. Requires @math{@var{n}
 > 0}. The @code{mpz_limbs_modify} function returns an array that holds the old
-absolute value of @var{x}, while @code{mpz_limbs_write} may destroy the old
+absolute value of @var{x} (in the first @code{mpz_size}(@var{x}) limbs, the
+other ones are undefined), while @code{mpz_limbs_write} may destroy the old
 value and return an array with unspecified contents.
 @end deftypefun
 
@@ -4342,9 +4451,14 @@ is exact.
 @end deftypefun
 
 @deftypefun {char *} mpq_get_str (char *@var{str}, int @var{base}, const mpq_t @var{op})
-Convert @var{op} to a string of digits in base @var{base}.  The base may vary
-from 2 to 36.  The string will be of the form @samp{num/den}, or if the
-denominator is 1 then just @samp{num}.
+Convert @var{op} to a string of digits in base @var{base}.  The base argument
+may vary from 2 to 62 or from @minus{}2 to @minus{}36.  The string will be of
+the form @samp{num/den}, or if the denominator is 1 then just @samp{num}.
+
+For @var{base} in the range 2..36, digits and lower-case letters are used; for
+@minus{}2..@minus{}36, digits and upper-case letters are used; for 37..62,
+digits, upper-case letters, and lower-case letters (in that significance order)
+are used.
 
 If @var{str} is @code{NULL}, the result string is allocated using the current
 allocation function (@pxref{Custom Allocation}).  The block will be
@@ -4438,7 +4552,7 @@ Compare @var{op1} and @var{num2}/@var{den2}.  Return a positive value if
 
 @var{num2} and @var{den2} are allowed to have common factors.
 
-These functions are implemented as a macros and evaluate their arguments
+These functions are implemented as macros and evaluate their arguments
 multiple times.
 @end deftypefn
 
@@ -4473,10 +4587,13 @@ Note that if an assignment to the numerator and/or denominator could take an
 (@pxref{Rational Number Functions}) then @code{mpq_canonicalize} must be
 called before any other @code{mpq} functions are applied to that @code{mpq_t}.
 
-@deftypefn Macro mpz_t mpq_numref (const mpq_t @var{op})
-@deftypefnx Macro mpz_t mpq_denref (const mpq_t @var{op})
+@deftypefn Macro mpz_ptr mpq_numref (const mpq_t @var{op})
+@deftypefnx Macro mpz_ptr mpq_denref (const mpq_t @var{op})
 Return a reference to the numerator and denominator of @var{op}, respectively.
-The @code{mpz} functions can be used on the result of these macros.
+The @code{mpz} functions can be used on the result of these macros.  Such
+calls may modify the numerator or denominator. However, care
+should be taken so that @var{op} remains in canonical form prior to a
+possible later call to an @code{mpq} function.
 @end deftypefn
 
 @deftypefun void mpq_get_num (mpz_t @var{numerator}, const mpq_t @var{rational})
@@ -4512,8 +4629,14 @@ See also @ref{Formatted Output} and @ref{Formatted Input}.
 
 @deftypefun size_t mpq_out_str (FILE *@var{stream}, int @var{base}, const mpq_t @var{op})
 Output @var{op} on stdio stream @var{stream}, as a string of digits in base
-@var{base}.  The base may vary from 2 to 36.  Output is in the form
+@var{base}.  The base argument may vary from 2 to 62 or from @minus{}2 to
+@minus{}36. Output is in the form
 @samp{num/den} or if the denominator is 1 then just @samp{num}.
+
+For @var{base} in the range 2..36, digits and lower-case letters are used; for
+@minus{}2..@minus{}36, digits and upper-case letters are used; for 37..62,
+digits, upper-case letters, and lower-case letters (in that significance order)
+are used.
 
 Return the number of bytes written, or if an error occurred, return 0.
 @end deftypefun
@@ -4530,9 +4653,10 @@ space is not permitted within the string.  If the input might not be in
 canonical form, then @code{mpq_canonicalize} must be called (@pxref{Rational
 Number Functions}).
 
-The @var{base} can be between 2 and 36, or can be 0 in which case the leading
+The @var{base} can be between 2 and 62, or can be 0 in which case the leading
 characters of the string determine the base, @samp{0x} or @samp{0X} for
-hexadecimal, @samp{0} for octal, or decimal otherwise.  The leading characters
+hexadecimal, @code{0b} and @code{0B} for binary, @samp{0} for octal, or
+decimal otherwise.  The leading characters
 are examined separately for the numerator and denominator of a fraction, so
 for instance @samp{0x10/11} is @math{16/11}, whereas @samp{0x10/0x11} is
 @math{16/17}.
@@ -4590,13 +4714,13 @@ not-a-number, and applications must take care not to overflow the exponent or
 results will be unpredictable.
 
 Note that the @code{mpf} functions are @emph{not} intended as a smooth
-extension to IEEE P754 arithmetic.  In particular results obtained on one
+extension to IEEE 754 arithmetic.  In particular results obtained on one
 computer often differ from the results on a computer with a different word
 size.
 
 New projects should consider using the GMP extension library MPFR
-(@url{http://mpfr.org}) instead.  MPFR provides well-defined precision and
-accurate rounding, and thereby naturally extends IEEE P754.
+(@url{https://www.mpfr.org/}) instead.  MPFR provides well-defined precision and
+accurate rounding, and thereby naturally extends IEEE 754-2019.
 
 @menu
 * Initializing Floats::
@@ -4748,8 +4872,8 @@ The argument @var{base} may be in the ranges 2 to 62, or @minus{}62 to
 decimal.
 
 For bases up to 36, case is ignored; upper-case and lower-case letters have
-the same value; for bases 37 to 62, upper-case letter represent the usual
-10..35 while lower-case letter represent 36..61.
+the same value; for bases 37 to 62, upper-case letters represent the usual
+10..35 while lower-case letters represent 36..61.
 
 Unlike the corresponding @code{mpz} function, the base will not be determined
 from the leading characters of the string if @var{base} is 0.  This is so that
@@ -5242,7 +5366,7 @@ This function requires that @var{s1n} is greater than or equal to
 
 @deftypefun mp_limb_t mpn_neg (mp_limb_t *@var{rp}, const mp_limb_t *@var{sp}, mp_size_t @var{n})
 Perform the negation of @{@var{sp}, @var{n}@}, and write the result to
-@{@var{rp}, @var{n}@}.  This is equivalent to calling @code{mpn_sub_n} with a
+@{@var{rp}, @var{n}@}.  This is equivalent to calling @code{mpn_sub_n} with an
 @var{n}-limb zero minuend and passing @{@var{sp}, @var{n}@} as subtrahend.
 Return borrow, either 0 or 1.
 @end deftypefun
@@ -5418,7 +5542,7 @@ Shift @{@var{sp}, @var{n}@} left by @var{count} bits, and write the result to
 least significant @var{count} bits of the return value (the rest of the return
 value is zero).
 
-@var{count} must be in the range 1 to @nicode{mp_bits_per_limb}@minus{}1.  The
+@var{count} must be in the range 1 to @nicode{mp_bits_per_limb}@math{{}-1}.  The
 regions @{@var{sp}, @var{n}@} and @{@var{rp}, @var{n}@} may overlap, provided
 @math{@var{rp} @ge{} @var{sp}}.
 
@@ -5431,7 +5555,7 @@ Shift @{@var{sp}, @var{n}@} right by @var{count} bits, and write the result to
 most significant @var{count} bits of the return value (the rest of the return
 value is zero).
 
-@var{count} must be in the range 1 to @nicode{mp_bits_per_limb}@minus{}1.  The
+@var{count} must be in the range 1 to @nicode{mp_bits_per_limb}@math{{}-1}.  The
 regions @{@var{sp}, @var{n}@} and @{@var{rp}, @var{n}@} may overlap, provided
 @math{@var{rp} @le{} @var{sp}}.
 
@@ -5454,8 +5578,9 @@ Set @{@var{rp}, @var{retval}@} to the greatest common divisor of @{@var{xp},
 the return value is the actual number produced.  Both source operands are
 destroyed.
 
-It is required that @math{@var{xn} @ge @var{yn} > 0}, and the most significant
-limb of @{@var{yp}, @var{yn}@} must be non-zero.  No overlap is permitted
+It is required that @math{@var{xn} @ge @var{yn} > 0}, the most significant
+limb of @{@var{yp}, @var{yn}@} must be non-zero, and at least one of
+the two operands must be odd.  No overlap is permitted
 between @{@var{xp}, @var{xn}@} and @{@var{yp}, @var{yn}@}.
 @end deftypefun
 
@@ -5767,7 +5892,7 @@ and @var{E} = @{@var{ep},@math{@GMPceil{@var{enb} /
 @code{GMP\_NUMB\_BITS}}}@}.
 
 It is required that @math{@var{B} > 0}, that @math{@var{M} > 0} is odd, and
-that @m{@var{E} < 2@GMPraise{@var{enb}}, @var{E} < 2^@var{enb}}.
+that @m{@var{E} < 2@GMPraise{@var{enb}}, @var{E} < 2^@var{enb}}, with @math{@var{enb} > 0}.
 
 No overlapping between @var{R} and the input operands is allowed.
 
@@ -5997,11 +6122,11 @@ Initialize @var{rop} with a copy of the algorithm and state from @var{op}.
 Initialize @var{state} with an algorithm selected by @var{alg}.  The only
 choice is @code{GMP_RAND_ALG_LC}, which is @code{gmp_randinit_lc_2exp_size}
 described above.  A third parameter of type @code{unsigned long} is required,
-this is the @var{size} for that function.  @code{GMP_RAND_ALG_DEFAULT} or 0
+this is the @var{size} for that function.  @code{GMP_RAND_ALG_DEFAULT} and 0
 are the same as @code{GMP_RAND_ALG_LC}.
 
 @c  For reference, this is the only place gmp_errno has been documented, and
-@c  due to being non thread safe we won't be adding to it's uses.
+@c  due to being non thread safe we won't be adding to its uses.
 @findex gmp_errno
 @findex GMP_ERROR_UNSUPPORTED_ARGUMENT
 @findex GMP_ERROR_INVALID_ARGUMENT
@@ -6027,7 +6152,7 @@ Free all memory occupied by @var{state}.
 Set an initial seed value into @var{state}.
 
 The size of a seed determines how many different sequences of random numbers
-that it's possible to generate.  The ``quality'' of the seed is the randomness
+it's possible to generate.  The ``quality'' of the seed is the randomness
 of a given seed compared to the previous seed used, and this affects the
 randomness of separate number sequences.  The method for choosing a seed is
 critical if the generated numbers are to be used for important applications,
@@ -6191,7 +6316,7 @@ meaningful for @samp{Z}, @samp{Q} and @samp{N}.
 
 @samp{M} is a proxy for the C library @samp{l} or @samp{L}, according to the
 size of @code{mp_limb_t}.  Unsigned conversions will be usual, but a signed
-conversion can be used and will interpret the value as a twos complement
+conversion can be used and will interpret the value as a two's complement
 negative.
 
 @samp{n} can be used with any type, even the GMP types.
@@ -6294,7 +6419,7 @@ if the C library @code{vsnprintf} is the older GLIBC 2.0.x style.
 @deftypefunx int gmp_vasprintf (char **@var{pp}, const char *@var{fmt}, va_list @var{ap})
 Form a null-terminated string in a block of memory obtained from the current
 memory allocation function (@pxref{Custom Allocation}).  The block will be the
-size of the string and null-terminator.  The address of the block in stored to
+size of the string and null-terminator.  The address of the block is stored to
 *@var{pp}.  The return value is the number of characters produced, excluding
 the null-terminator.
 
@@ -6334,7 +6459,7 @@ Print @var{op} to @var{stream}, using its @code{ios} formatting settings.
 
 In hex or octal, @var{op} is printed as a signed number, the same as for
 decimal.  This is unlike the standard @code{operator<<} routines on @code{int}
-etc, which instead give twos complement.
+etc, which instead give two's complement.
 @end deftypefun
 
 @deftypefun ostream& operator<< (ostream& @var{stream}, const mpq_t @var{op})
@@ -6863,11 +6988,18 @@ mpz_fdiv_q (q.get_mpz_t(), a.get_mpz_t(), d.get_mpz_t());
 @maybepagebreak
 @deftypefunx mpz_class gcd (mpz_class @var{op1}, mpz_class @var{op2})
 @deftypefunx mpz_class lcm (mpz_class @var{op1}, mpz_class @var{op2})
+@deftypefunx mpz_class mpz_class::factorial (type @var{op})
+@deftypefunx mpz_class factorial (mpz_class @var{op})
+@deftypefunx mpz_class mpz_class::primorial (type @var{op})
+@deftypefunx mpz_class primorial (mpz_class @var{op})
+@deftypefunx mpz_class mpz_class::fibonacci (type @var{op})
+@deftypefunx mpz_class fibonacci (mpz_class @var{op})
 @maybepagebreak
 @deftypefunx void mpz_class::swap (mpz_class& @var{op})
 @deftypefunx void swap (mpz_class& @var{op1}, mpz_class& @var{op2})
 These functions provide a C++ class interface to the corresponding GMP C
-routines.
+routines.  Calling @code{factorial} or @code{primorial} on a negative number
+is undefined.
 
 @code{cmp} can be used with any of the classes or the standard C++ types,
 except @code{long long} and @code{long double}.
@@ -7113,7 +7245,7 @@ Get or set the current precision of an @code{mpf_class}.
 
 The restrictions described for @code{mpf_set_prec_raw} (@pxref{Initializing
 Floats}) apply to @code{mpf_class::set_prec_raw}.  Note in particular that the
-@code{mpf_class} must be restored to it's allocated precision before being
+@code{mpf_class} must be restored to its allocated precision before being
 destroyed.  This must be done by application code, there's no automatic
 mechanism for it.
 @end deftypefun
@@ -7424,10 +7556,7 @@ interface, expression templates to eliminate temporaries.
 ALP @spaceuref{https://www-sop.inria.fr/saga/logiciels/ALP/} @* Linear algebra and
 polynomials using templates.
 @item
-Arithmos @spaceuref{http://cant.ua.ac.be/old/arithmos/} @* Rationals
-with infinities and square roots.
-@item
-CLN @spaceuref{http://www.ginac.de/CLN/} @* High level classes for arithmetic.
+CLN @spaceuref{https://www.ginac.de/CLN/} @* High level classes for arithmetic.
 @item
 Linbox @spaceuref{http://www.linalg.org/} @* Sparse vectors and matrices.
 @item
@@ -7474,17 +7603,8 @@ Librep @spaceuref{http://librep.sourceforge.net/}
 @item
 @c  FIXME: When there's a stable release with gmp support, just refer to it
 @c  rather than bothering to talk about betas.
-XEmacs (21.5.18 beta and up) @spaceuref{http://www.xemacs.org} @* Optional
+XEmacs (21.5.18 beta and up) @spaceuref{https://www.xemacs.org} @* Optional
 big integers, rationals and floats using GMP.
-@end itemize
-
-@item M4
-@itemize @bullet
-@item
-@c  FIXME: When there's a stable release with gmp support, just refer to it
-@c  rather than bothering to talk about betas.
-GNU m4 betas @spaceuref{http://www.seindal.dk/rene/gnu/} @* Optionally provides
-an arbitrary precision @code{mpeval}.
 @end itemize
 
 @item ML
@@ -7496,7 +7616,7 @@ MLton compiler @spaceuref{http://mlton.org/}
 @item Objective Caml
 @itemize @bullet
 @item
-MLGMP @spaceuref{http://opam.ocamlpro.com/pkg/mlgmp.20120224.html}
+MLGMP @spaceuref{https://opam.ocaml.org/packages/mlgmp/}
 @item
 Numerix @spaceuref{http://pauillac.inria.fr/~quercia/} @* Optionally using
 GMP.
@@ -7505,7 +7625,7 @@ GMP.
 @item Oz
 @itemize @bullet
 @item
-Mozart @spaceuref{http://mozart.github.io/}
+Mozart @spaceuref{https://mozart.github.io/}
 @end itemize
 
 @item Pascal
@@ -7523,10 +7643,10 @@ optionally using GMP.
 GMP module, see @file{demos/perl} in the GMP sources (@pxref{Demonstration
 Programs}).
 @item
-Math::GMP @spaceuref{http://www.cpan.org/} @* Compatible with Math::BigInt, but
+Math::GMP @spaceuref{https://www.cpan.org/} @* Compatible with Math::BigInt, but
 not as many functions as the GMP module above.
 @item
-Math::BigInt::GMP @spaceuref{http://www.cpan.org/} @* Plug Math::GMP into
+Math::BigInt::GMP @spaceuref{https://www.cpan.org/} @* Plug Math::GMP into
 normal Math::BigInt operations.
 @end itemize
 
@@ -7534,7 +7654,7 @@ normal Math::BigInt operations.
 @item Pike
 @itemize @bullet
 @item
-mpz module in the standard distribution, @uref{http://pike.ida.liu.se/}
+pikempz module in the standard distribution, @uref{https://pike.lysator.liu.se/}
 @end itemize
 
 @need 500
@@ -7554,7 +7674,7 @@ GMPY @uref{https://code.google.com/p/gmpy/}
 @item Ruby
 @itemize @bullet
 @item
-http://rubygems.org/gems/gmp
+@uref{https://rubygems.org/gems/gmp}
 @end itemize
 
 @item Scheme
@@ -7562,7 +7682,7 @@ http://rubygems.org/gems/gmp
 @item
 GNU Guile @spaceuref{https://www.gnu.org/software/guile/guile.html}
 @item
-RScheme @spaceuref{http://www.rscheme.org/}
+RScheme @spaceuref{https://www.rscheme.org/}
 @item
 STklos @spaceuref{http://www.stklos.net/}
 @c
@@ -7575,7 +7695,7 @@ STklos @spaceuref{http://www.stklos.net/}
 @item Smalltalk
 @itemize @bullet
 @item
-GNU Smalltalk @spaceuref{http://www.smalltalk.org/versions/GNUSmalltalk.html}
+GNU Smalltalk @spaceuref{http://smalltalk.gnu.org/}
 @end itemize
 
 @item Other
@@ -7587,7 +7707,7 @@ using GCL.
 DrGenius @spaceuref{http://drgenius.seul.org/} @* Geometry system and
 mathematical programming language.
 @item
-GiNaC @spaceuref{http://www.ginac.de/} @* C++ computer algebra using CLN.
+GiNaC @spaceuref{httsp://www.ginac.de/} @* C++ computer algebra using CLN.
 @item
 GOO @spaceuref{https://www.eecs.berkeley.edu/~jrb/goo/} @* Dynamic object oriented
 language.
@@ -7998,7 +8118,7 @@ are
 The @m{w_i,w[i]} are going to be determined, and when they are they'll give
 the final result using @math{w=W(b)}, since
 @m{xy=X(b)Y(b),x*y=X(b)*Y(b)=W(b)}.  The coefficients will be roughly
-@math{b^2} each, and the final @math{W(b)} will be an addition like,
+@math{b^2} each, and the final @math{W(b)} will be an addition like this:
 
 @tex
 \def\GMPbox#1#2{%
@@ -8056,7 +8176,7 @@ nine @m{x_iy_j,x[i]*y[j]} for @math{i,j=0,1,2}, and would be equivalent merely
 to a basecase multiply.  Instead the following approach is used.
 
 @math{X(t)} and @math{Y(t)} are evaluated and multiplied at 5 points, giving
-values of @math{W(t)} at those points.  In GMP the following points are used,
+values of @math{W(t)} at those points.  In GMP the following points are used:
 
 @quotation
 @multitable {@m{t=\infty,t=inf}M} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
@@ -8191,7 +8311,7 @@ values of @math{W(t)} at those points.  In GMP the following points are used,
 @end quotation
 
 The number of additions and subtractions for Toom-4 is much larger than for Toom-3.
-But several subexpressions occur multiple times, for example @m{x_2+x_0,x2+x0}, occurs
+But several subexpressions occur multiple times, for example @m{x_2+x_0,x2+x0} occurs
 for both @math{t=1} and @math{t=-1}.
 
 Toom-4 is asymptotically @math{O(N^@W{1.404})}, the exponent being
@@ -8204,22 +8324,22 @@ original size each.
 @cindex Toom multiplication
 
 The Toom algorithms described above (@pxref{Toom 3-Way Multiplication},
-@pxref{Toom 4-Way Multiplication}) generalizes to split into an arbitrary
+@pxref{Toom 4-Way Multiplication}) generalize to split into an arbitrary
 number of pieces. In general a split of two equally long operands into
 @math{r} pieces leads to evaluations and pointwise multiplications done at
 @m{2r-1,2*r-1} points. To fully exploit symmetries it would be better to have
 a multiple of 4 points, that's why for higher degree Toom'n'half is used.
 
 Toom'n'half means that the existence of one more piece is considered for a
-single operand. It can be virtual, i.e. zero, or real, when the two operand
+single operand. It can be virtual, i.e. zero, or real, when the two operands
 are not exactly balanced. By choosing an even @math{r},
 Toom-@m{r{1\over2},r+1/2} requires @math{2r} points, a multiple of four.
 
-The four-plets of points include 0, @m{\infty,inf}, +1, -1 and
-@m{\pm2^i,+-2^i}, @m{\pm2^{-i},+-2^-i} . Each of them giving shortcuts for the
+The quadruplets of points include 0, @m{\infty,inf}, +1, @m{-1} and
+@m{\pm2^i,+-2^i}, @m{\pm2^{-i},+-2^-i}. Each of them giving shortcuts for the
 evaluation phase and for some steps in the interpolation phase. Further tricks
 are used to reduce the memory footprint of the whole multiplication algorithm
-to a memory buffer equanl in size to the result of the product.
+to a memory buffer equal in size to the result of the product.
 
 Current GMP uses both Toom-6'n'half and Toom-8'n'half.
 
@@ -8249,7 +8369,7 @@ pieces of @math{M=N/2^k} bits each.  @math{N} must be a multiple of
 the split falls on limb boundaries, avoiding bit shifts in the split and
 combine stages.
 
-The evaluations, pointwise multiplications, and interpolation, are all done
+The evaluations, pointwise multiplications, and interpolation are all done
 modulo @m{2^{N'}+1, 2^N'+1} where @math{N'} is @math{2M+k+3} rounded up to a
 multiple of @math{2^k} and of @code{mp_bits_per_limb}.  The results of
 interpolation will be the following negacyclic convolution of the input
@@ -8351,7 +8471,7 @@ currently used.  The notes here are merely for interest.
 In general a split into @math{r+1} pieces is made, and evaluations and
 pointwise multiplications done at @m{2r+1,2*r+1} points.  A 4-way split does 7
 pointwise multiplies, 5-way does 9, etc.  Asymptotically an @math{(r+1)}-way
-algorithm is @m{O(N^{log(2r+1)/log(r+1)}), O(N^(log(2*r+1)/log(r+1)))}.  Only
+algorithm is @m{O(N^{\log(2r+1)/\log(r+1)}), O(N^(log(2*r+1)/log(r+1)))}.  Only
 the pointwise multiplications count towards big-@math{O} complexity, but the
 time spent in the evaluate and interpolate stages grows with @math{r} and has
 a significant practical impact, with the asymptotic advantage of each @math{r}
@@ -8397,7 +8517,7 @@ For really large operands, we invoke FFT directly.
 For operands between these sizes, we use Toom inspired algorithms suggested by
 Alberto Zanoni and Marco Bodrato.  The idea is to split the operands into
 polynomials of different degree.  GMP currently splits the smaller operand
-onto 2 coefficients, i.e., a polynomial of degree 1, but the larger operand
+into 2 coefficients, i.e., a polynomial of degree 1, but the larger operand
 can be split into 2, 3, or 4 coefficients, i.e., a polynomial of degree 1 to
 3.
 
@@ -8745,7 +8865,7 @@ code as described above.  For two N-bit operands, the algorithm takes about
 0.68 iterations per bit.  For optimum performance some attention needs to be
 paid to the way the factors of 2 are stripped from @math{a}.
 
-Firstly it may be noted that in twos complement the number of low zero bits on
+Firstly it may be noted that in two's complement the number of low zero bits on
 @math{a-b} is the same as @math{b-a}, so counting or testing can begin on
 @math{a-b} without waiting for @math{@abs{}(a-b)} to be determined.
 
@@ -8754,7 +8874,7 @@ condition is data dependent.  But on average there's only a few low zeros, so
 an option is to strip one or two bits arithmetically then loop for more (as
 done for AMD K6).  Or use a lookup table to get a count for several bits then
 loop for more (as done for AMD K7).  An alternative approach is to keep just
-one of @math{a} or @math{b} odd and iterate
+one of @math{a} and @math{b} odd and iterate
 
 @quotation
 @math{a,b = @abs{}(a-b), @min{}(a,b)} @*
@@ -8806,10 +8926,10 @@ the initial quotient sequence for the two large numbers; the final quotient
 may sometimes be one off.
 
 @item
-It takes advantage of the fact the quotients are usually small. The division
+It takes advantage of the fact that the quotients are usually small. The division
 operator is not used, since the corresponding assembler instruction is very
 slow on most architectures. (This code could probably be improved further, it
-uses many branches that are unfriendly to prediction).
+uses many branches that are unfriendly to prediction.)
 
 @item
 It switches from double-limb calculations to single-limb calculations half-way
@@ -8869,7 +8989,7 @@ algorithm. Where Lehmer repeatedly chops off the top two limbs, calls
 @code{mpn_hgcd2}, and applies the resulting matrix to the full numbers, the
 sub-quadratic GCD chops off the most significant third of the limbs (the
 proportion is a tuning parameter, and @math{1/3} seems to be more efficient
-than, e.g, @math{1/2}), calls @code{mpn_hgcd}, and applies the resulting
+than, e.g., @math{1/2}), calls @code{mpn_hgcd}, and applies the resulting
 matrix. Once the input numbers are reduced to size below
 @code{GCD_DC_THRESHOLD}, Lehmer's algorithm is used for the rest of the work.
 
@@ -8888,7 +9008,7 @@ handle this case. The binary algorithm is used only for single-limb GCDEXT.
 Lehmer's algorithm is used for sizes up to @code{GCDEXT_DC_THRESHOLD}. Above
 this threshold, GCDEXT is implemented as a loop around HGCD, but with more
 book-keeping to keep track of the cofactors. This gives the same asymptotic
-running time as for GCD and HGCD, @m{O(M(N)\log N),O(M(N)*log(N))}
+running time as for GCD and HGCD, @m{O(M(N)\log N),O(M(N)*log(N))}.
 
 One difference to plain GCD is that while the inputs @math{a} and @math{b} are
 reduced as the algorithm proceeds, the cofactors @math{x} and @math{y} grow in
@@ -8904,23 +9024,64 @@ current size of the cofactors.
 @subsection Jacobi Symbol
 @cindex Jacobi symbol algorithm
 
-[This section is obsolete.  The current Jacobi code actually uses a very
-efficient algorithm.]
+@c Editor Note: I don't see other people defining the inputs, it would be nice
+@c here because the code uses (a/b) where other references use (n/k)
 
-@code{mpz_jacobi} and @code{mpz_kronecker} are currently implemented with a
-simple binary algorithm similar to that described for the GCDs (@pxref{Binary
-GCD}).  They're not very fast when both inputs are large.  Lehmer's multi-step
-improvement or a binary based multi-step algorithm is likely to be better.
+Jacobi symbol @m{\left(a \over b\right), (@var{a}/@var{b})}
 
-When one operand fits a single limb, and that includes @code{mpz_kronecker_ui}
-and friends, an initial reduction is done with either @code{mpn_mod_1} or
-@code{mpn_modexact_1_odd}, followed by the binary algorithm on a single limb.
-The binary algorithm is well suited to a single limb, and the whole
-calculation in this case is quite efficient.
+Initially if either operand fits in a single limb, a reduction is done with
+either @code{mpn_mod_1} or @code{mpn_modexact_1_odd}, followed by the binary
+algorithm on a single limb.  The binary algorithm is well suited to a single limb,
+and the whole calculation in this case is quite efficient.
 
-In all the routines sign changes for the result are accumulated using some bit
-twiddling, avoiding table lookups or conditional jumps.
+For inputs larger than @code{GCD_DC_THRESHOLD}, @code{mpz_jacobi},
+@code{mpz_legendre} and @code{mpz_kronecker} are computed via the HGCD (Half
+GCD) function, as a generalization to Lehmer's algorithm.
 
+Most GCD algorithms reduce @math{a} and @math{b} by repeatedly computing the
+quotient @m{q = \lfloor a/b \rfloor, q = floor(a/b)} and iteratively replacing
+
+@c Couldn't figure out macros with commas.
+@tex
+$$ a, b = b, a - q * b$$
+@end tex
+@ifnottex
+@math{a, b = b, a - q * b}
+@end ifnottex
+
+Different algorithms use different methods for calculating q, but the core
+algorithm is the same if we use @ref{Lehmer's Algorithm} or
+@ref{Subquadratic GCD, HGCD}.
+
+At each step it is possible to compute if the reduction inverts the Jacobi
+symbol based on the two least significant bits of @var{a} and @var{b}.  For
+more details see ``Efficient computation of the Jacobi symbol'' by
+M@"oller (@pxref{References}).
+
+A small set of bits is thus used to track state
+@itemize
+@item
+current sign of result (1 bit)
+
+@item
+two least significant bits of @var{a} and @var{b} (4 bits)
+
+@item
+a pointer to which input is currently the denominator (1 bit)
+@end itemize
+
+In all the routines sign changes for the result are accumulated using fast bit
+twiddling which avoids conditional jumps.
+
+The final result is calculated after verifying the inputs are coprime (GCD = 1)
+by raising @m{(-1)^e,(-1)^e}.
+
+Much of the HGCD code is shared directly with the HGCD implementations, such
+as the 2x2 matrix calculation, @xref{Lehmer's Algorithm} basecase and
+@code{GCD_DC_THRESHOLD}.
+
+The asymptotic running time is @m{O(M(N)\log N),O(M(N)*log(N))}, where
+@math{M(N)} is the time for multiplying two @math{N}-limb numbers.
 
 @need 1000
 @node Powering Algorithms, Root Extraction Algorithms, Greatest Common Divisor Algorithms, Algorithms
@@ -9317,9 +9478,9 @@ recursively. The procedure can be best illustrated with an example,
 @end quotation
 
 Current code collects all the factors in a single list, with a loop and no
-recursion, and compute the product, with no special care for repeated chunks.
+recursion, and computes the product, with no special care for repeated chunks.
 
-When @math{n} is larger, computation pass trough prime sieving. An helper
+When @math{n} is larger, computations pass through prime sieving. A helper
 function is used, as suggested by Peter Luschny:
 @tex
 $$\mathop{\rm msf}(n) = {n!\over\lfloor n/2\rfloor!^2\cdot2^k} = \prod_{p=3}^{n}
@@ -9731,10 +9892,10 @@ addressing done with the loop counter as a scaled index.
 
 The final loop control cost can be amortised by processing several limbs in
 each iteration (@pxref{Assembly Loop Unrolling}).  This at least ensures loop
-control isn't a big fraction the work done.
+control isn't a big fraction of the work done.
 
 Memory throughput is always a limit.  If perhaps only one load or one store
-can be done per cycle then 3 cycles/limb will the top speed for ``binary''
+can be done per cycle then 3 cycles/limb will be the top speed for ``binary''
 operations like @code{mpn_add_n}, and any code achieving that is optimal.
 
 Integer resources can be freed up by having the loop counter in a float
@@ -9749,7 +9910,7 @@ twiddling.
 
 @node Assembly Floating Point, Assembly SIMD Instructions, Assembly Functional Units, Assembly Coding
 @subsection Floating Point
-@cindex Assembly floating Point
+@cindex Assembly floating point
 
 Floating point arithmetic is used in GMP for multiplications on CPUs with poor
 integer multipliers.  It's mostly useful for @code{mpn_mul_1},
@@ -9991,7 +10152,7 @@ juggling.
 
 If the latency of some instruction is greater than the loop time then it will
 be necessary to unroll, so one register has a result ready to use while
-another (or multiple others) are still in progress.  (@pxref{Assembly Loop
+another (or multiple others) are still in progress (@pxref{Assembly Loop
 Unrolling}).
 
 
@@ -10125,7 +10286,7 @@ dynamically allocated and reallocated.  The fields are as follows.
 @item @code{_mp_size}
 The number of limbs, or the negative of that when representing a negative
 integer.  Zero is represented by @code{_mp_size} set to zero, in which case
-the @code{_mp_d} data is unused.
+the @code{_mp_d} data is undefined.
 
 @item @code{_mp_d}
 A pointer to an array of limbs which is the magnitude.  These are stored
@@ -10134,26 +10295,30 @@ least significant limb and @code{_mp_d[ABS(_mp_size)-1]} is the most
 significant.  Whenever @code{_mp_size} is non-zero, the most significant limb
 is non-zero.
 
-Currently there's always at least one limb allocated, so for instance
-@code{mpz_set_ui} never needs to reallocate, and @code{mpz_get_ui} can fetch
-@code{_mp_d[0]} unconditionally (though its value is then only wanted if
-@code{_mp_size} is non-zero).
+Currently there's always at least one readable limb, so for instance
+@code{mpz_get_ui} can fetch @code{_mp_d[0]} unconditionally (though its value
+is undefined if @code{_mp_size} is zero).
 
 @item @code{_mp_alloc}
 @code{_mp_alloc} is the number of limbs currently allocated at @code{_mp_d},
-and naturally @code{_mp_alloc >= ABS(_mp_size)}.  When an @code{mpz} routine
+and normally @code{_mp_alloc >= ABS(_mp_size)}.  When an @code{mpz} routine
 is about to (or might be about to) increase @code{_mp_size}, it checks
 @code{_mp_alloc} to see whether there's enough space, and reallocates if not.
 @code{MPZ_REALLOC} is generally used for this.
+
+@code{mpz_t} variables initialised with the @code{mpz_roinit_n} function or
+the @code{MPZ_ROINIT_N} macro have @code{_mp_alloc = 0} but can have a
+non-zero @code{_mp_size}.  They can only be used as read-only constants. See
+@ref{Integer Special Functions} for details.
 @end table
 
 The various bitwise logical functions like @code{mpz_and} behave as if
-negative values were twos complement.  But sign and magnitude is always used
+negative values were two's complement.  But sign and magnitude is always used
 internally, and necessary adjustments are made during the calculations.
 Sometimes this isn't pretty, but sign and magnitude are best for other
 routines.
 
-Some internal temporary variables are setup with @code{MPZ_TMP_INIT} and these
+Some internal temporary variables are set up with @code{MPZ_TMP_INIT} and these
 have @code{_mp_d} space obtained from @code{TMP_ALLOC} rather than the memory
 allocation functions.  Care is taken to ensure that these are big enough that
 no reallocation is necessary (since it would have unpredictable consequences).
@@ -10418,7 +10583,7 @@ limbs, then an extra added for the high being only non-zero, giving an
 back with @code{mpf_get_prec} will take @code{_mp_prec} subtract 1 limb and
 multiply by 32, giving 256 bits.
 
-Strictly speaking, the fact the high limb has at least one bit means that a
+Strictly speaking, the fact that the high limb has at least one bit means that a
 float with, say, 3 limbs of 32-bits each will be holding at least 65 bits, but
 for the purposes of @code{mpf_t} it's considered simply to be 64 bits, a nice
 multiple of the limb size.
@@ -10459,7 +10624,7 @@ multiple of the limb size.
 @end ifnottex
 
 The size is 4 bytes written most significant byte first, being the number of
-subsequent data bytes, or the twos complement negative of that when a negative
+subsequent data bytes, or the two's complement negative of that when a negative
 integer is represented.  The data bytes are the absolute value of the integer,
 written most significant byte first.
 
@@ -10587,7 +10752,7 @@ all subexpressions are evaluated to the precision of @code{f}.
 @cindex Contributors
 
 Torbj@"orn Granlund wrote the original GMP library and is still the main
-developer.  Code not explicitly attributed to others, was contributed by
+developer.  Code not explicitly attributed to others was contributed by
 Torbj@"orn.  Several other individuals and organizations have contributed
 GMP.  Here is a list in chronological order on first contribution:
 
@@ -10633,7 +10798,7 @@ improvements for population count.  Robert also wrote highly optimized
 Karatsuba and 3-way Toom multiplication functions for GMP 3, and contributed
 the ARM assembly code.
 
-Torsten Ekedahl of the Mathematical department of Stockholm University provided
+Torsten Ekedahl of the Mathematical Department of Stockholm University provided
 significant inspiration during several phases of the GMP development.  His
 mathematical expertise helped improve several algorithms.
 
@@ -10659,7 +10824,7 @@ Jason Moxham rewrote @code{mpz_fac_ui}.
 Pedro Gimeno implemented the Mersenne Twister and made other random number
 improvements.
 
-Niels M@"oller wrote the sub-quadratic GCD, extended GCD and jacobi code, the
+Niels M@"oller wrote the sub-quadratic GCD, extended GCD and Jacobi code, the
 quadratic Hensel division code, and (with Torbj@"orn) the new divide and
 conquer division code for GMP 4.3.  Niels also helped implement the new Toom
 multiply code for GMP 4.3 and implemented helper functions to simplify Toom
@@ -10675,8 +10840,9 @@ implemented most of the new Toom multiply and squaring code for 5.0.
 He is the main author of the current mpn_mulmod_bnm1, mpn_mullo_n, and
 mpn_sqrlo.  Marco also wrote the functions mpn_invert and mpn_invertappr,
 and improved the speed of integer root extraction.  He is the author of
-the current combinatorial functions: binomial, factorial, multifactorial,
-primorial.
+mini-mpq, an additional layer to mini-gmp; of most of the combinatorial
+functions and the BPSW primality testing implementation, for both the
+main library and the mini-gmp package.
 
 David Harvey suggested the internal function @code{mpn_bdiv_dbm1}, implementing
 division relevant to Toom multiplication.  He also worked on fast assembly
@@ -10705,7 +10871,7 @@ Ulrich Weigand ported GMP to the powerpc64le ABI.
 contributed to GMP but are not listed above, please tell
 @email{gmp-devel@@gmplib.org} about the omission!)
 
-The development of floating point functions of GNU MP 2, were supported in part
+The development of floating point functions of GNU MP 2 was supported in part
 by the ESPRIT-BRA (Basic Research Activities) 6846 project POSSO (POlynomial
 System SOlving).
 
@@ -10740,17 +10906,17 @@ Analytic Number Theory and Computational Complexity'', Wiley, 1998.
 @item
 Richard Crandall and Carl Pomerance, ``Prime Numbers: A Computational
 Perspective'', 2nd edition, Springer-Verlag, 2005.
-@texlinebreak{} @uref{http://www.math.dartmouth.edu/~carlp/}
+@texlinebreak{} @uref{https://www.math.dartmouth.edu/~carlp/}
 
 @item
 Henri Cohen, ``A Course in Computational Algebraic Number Theory'', Graduate
 Texts in Mathematics number 138, Springer-Verlag, 1993.
-@texlinebreak{} @uref{http://www.math.u-bordeaux.fr/~cohen/}
+@texlinebreak{} @uref{https://www.math.u-bordeaux.fr/~cohen/}
 
 @item
 Donald E. Knuth, ``The Art of Computer Programming'', volume 2,
 ``Seminumerical Algorithms'', 3rd edition, Addison-Wesley, 1998.
-@texlinebreak{} @uref{http://www-cs-faculty.stanford.edu/~knuth/taocp.html}
+@texlinebreak{} @uref{https://www-cs-faculty.stanford.edu/~knuth/taocp.html}
 
 @item
 John D. Lipson, ``Elements of Algebra and Algebraic Computing'',
@@ -10774,12 +10940,12 @@ Collection'', Free Software Foundation, 2008, available online
 Yves Bertot, Nicolas Magaud and Paul Zimmermann, ``A Proof of GMP Square
 Root'', Journal of Automated Reasoning, volume 29, 2002, pp.@: 225-252.  Also
 available online as INRIA Research Report 4475, June 2002,
-@uref{http://hal.inria.fr/docs/00/07/21/13/PDF/RR-4475.pdf}
+@uref{https://hal.inria.fr/docs/00/07/21/13/PDF/RR-4475.pdf}
 
 @item
 Christoph Burnikel and Joachim Ziegler, ``Fast Recursive Division'',
 Max-Planck-Institut fuer Informatik Research Report MPI-I-98-1-022,
-@texlinebreak{} @uref{http://data.mpi-sb.mpg.de/internet/reports.nsf/NumberView/1998-1-022}
+@texlinebreak{} @uref{https://www.mpi-inf.mpg.de/~ziegler/TechRep.ps.gz}
 
 @item
 Torbj@"orn Granlund and Peter L. Montgomery, ``Division by Invariant Integers
@@ -10835,7 +11001,7 @@ Makoto Matsumoto and Takuji Nishimura, ``Mersenne Twister: A 623-dimensionally
 equidistributed uniform pseudorandom number generator'', ACM Transactions on
 Modelling and Computer Simulation, volume 8, January 1998, pp.@: 3-30.
 Available online @texlinebreak{}
-@uref{http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/ARTICLES/mt.ps.gz} (or .pdf)
+@uref{http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/ARTICLES/mt.pdf}
 
 @item
 R. Moenck and A. Borodin, ``Fast Modular Transforms via Division'',
@@ -10847,7 +11013,7 @@ pp.@: 366-386.
 @item
 Niels M@"oller, ``On Sch@"onhage's algorithm and subquadratic integer GCD
   computation'', in Mathematics of Computation, volume 77, January 2008, pp.@:
-  589-607.
+  589-607, @uref{https://www.ams.org/journals/mcom/2008-77-261/S0025-5718-07-02017-0/home.html}
 
 @item
 Peter L. Montgomery, ``Modular Multiplication Without Trial Division'', in
@@ -10864,20 +11030,23 @@ volume 21, number 1, March 1995, pp.@: 111-122.
 
 @item
 Paul Zimmermann, ``Karatsuba Square Root'', INRIA Research Report 3805,
-November 1999, @uref{http://hal.inria.fr/inria-00072854/PDF/RR-3805.pdf}
+November 1999, @uref{https://hal.inria.fr/inria-00072854/PDF/RR-3805.pdf}
 
 @item
 Paul Zimmermann, ``A Proof of GMP Fast Division and Square Root
 Implementations'', @texlinebreak{}
-@uref{http://www.loria.fr/~zimmerma/papers/proof-div-sqrt.ps.gz}
+@uref{https://homepages.loria.fr/PZimmermann/papers/proof-div-sqrt.ps.gz}
 
 @item
 Dan Zuras, ``On Squaring and Multiplying Large Integers'', ARITH-11: IEEE
 Symposium on Computer Arithmetic, 1993, pp.@: 260 to 271.  Reprinted as ``More
 on Multiplying and Squaring Large Integers'', IEEE Transactions on Computers,
 volume 43, number 8, August 1994, pp.@: 899-908.
-@end itemize
 
+@item
+Niels M@"oller, ``Efficient computation of the Jacobi symbol'', @texlinebreak{}
+@uref{https://arxiv.org/abs/1907.07795}
+@end itemize
 
 @node GNU Free Documentation License, Concept Index, References, Top
 @appendix GNU Free Documentation License

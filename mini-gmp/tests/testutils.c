@@ -1,6 +1,6 @@
 /*
 
-Copyright 2013-2015, Free Software Foundation, Inc.
+Copyright 2013-2015, 2018 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library test suite.
 
@@ -22,6 +22,7 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 /* Include it here, so we we could tweak, e.g., how MPZ_REALLOC
    works. */
 #include "../mini-gmp.c"
+#include "../mini-mpq.c"
 
 static size_t total_alloc = 0;
 
@@ -83,8 +84,16 @@ tu_alloc (size_t size)
 static void *
 tu_realloc (void *p, size_t old_size, size_t new_size)
 {
-  size_t *block = block_check (p);
-  block = (size_t *) realloc (block, sizeof(size_t) + new_size + sizeof(block_end));
+  size_t *block;
+  size_t *old_block = block_check (p);
+  if (old_block[0] != old_size)
+    {
+      fprintf (stderr, "%s:%d: bad old_size: want %ld, got %ld.\n", __FILE__, __LINE__,
+                 (long)old_block[0], (long)old_size);
+      abort ();
+    }
+
+  block = (size_t *) realloc (old_block, sizeof(size_t) + new_size + sizeof(block_end));
   if (!block)
     {
       fprintf (stderr, "Virtual memory exhausted.\n");
@@ -97,17 +106,24 @@ tu_realloc (void *p, size_t old_size, size_t new_size)
 static void
 tu_free (void *p, size_t old_size)
 {
-  free (block_check (p));
+  size_t *old_block = block_check (p);
+  if (old_block[0] != old_size && old_size != 0)
+    {
+      fprintf (stderr, "%s:%d: bad old_size: want %ld, got %ld.\n", __FILE__, __LINE__,
+                 (long)old_block[0], (long)old_size);
+      abort ();
+    }
+  free (old_block);
 }
 
 /* Free memory allocated via mini-gmp allocation function. */
 void
-testfree (void *p)
+testfree (void *p, size_t size)
 {
   void (*freefunc) (void *, size_t);
   mp_get_memory_functions (NULL, NULL, &freefunc);
 
-  freefunc (p, 0);
+  freefunc (p, size);
 }
 
 int
@@ -157,7 +173,7 @@ dump (const char *label, const mpz_t x)
 {
   char *buf = mpz_get_str (NULL, 16, x);
   fprintf (stderr, "%s: %s\n", label, buf);
-  testfree (buf);
+  testfree (buf, strlen(buf) + 1);
 }
 
 void
@@ -170,4 +186,11 @@ mpz_set_str_or_abort (mpz_ptr z, const char *str, int base)
       fprintf (stderr, "   base = %d\n", base);
       abort();
     }
+}
+
+int
+mpz_lucas_mod (mpz_t V, mpz_t Qk, long Q,
+	       mp_bitcnt_t b0, const mpz_t n)
+{
+  return gmp_lucas_mod (V, Qk, Q, b0, n);
 }

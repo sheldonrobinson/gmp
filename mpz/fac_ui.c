@@ -2,7 +2,8 @@
 
 Contributed to the GNU project by Marco Bodrato.
 
-Copyright 1991, 1993-1995, 2000-2003, 2011, 2012 Free Software Foundation, Inc.
+Copyright 1991, 1993-1995, 2000-2003, 2011, 2012, 2015, 2021 Free
+Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -30,7 +31,6 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 #define FACTOR_LIST_STORE(P, PR, MAX_PR, VEC, I)		\
@@ -60,7 +60,7 @@ mpz_fac_ui (mpz_ptr x, unsigned long n)
 
   if (n < numberof (table))
     {
-      PTR (x)[0] = table[n];
+      MPZ_NEWALLOC (x, 1)[0] = table[n];
       SIZ (x) = 1;
     }
   else if (BELOW_THRESHOLD (n, FAC_ODD_THRESHOLD))
@@ -68,21 +68,35 @@ mpz_fac_ui (mpz_ptr x, unsigned long n)
       mp_limb_t prod, max_prod;
       mp_size_t j;
       mp_ptr    factors;
+      mp_limb_t fac, diff = n - numberof (table);
       TMP_SDECL;
 
       TMP_SMARK;
-      factors = TMP_SALLOC_LIMBS (2 + (n - numberof (table)) / FACTORS_PER_LIMB);
+      factors = TMP_SALLOC_LIMBS (2 + diff / FACTORS_PER_LIMB);
 
       factors[0] = table[numberof (table)-1];
       j = 1;
-      prod = n;
+      if ((diff & 1) == 0)
+	{
+	  prod = n;
+	  /* if (diff != 0) */
+	    fac = --n * numberof (table);
+	}
+      else
+	{
+	  prod = n * numberof (table);
+	  fac = prod + --diff;
+	}
+
 #if TUNE_PROGRAM_BUILD
-      max_prod = GMP_NUMB_MAX / FAC_DSC_THRESHOLD_LIMIT;
+      max_prod = GMP_NUMB_MAX / (FAC_DSC_THRESHOLD_LIMIT * FAC_DSC_THRESHOLD_LIMIT);
 #else
-      max_prod = GMP_NUMB_MAX / (FAC_ODD_THRESHOLD | 1);
+      max_prod = GMP_NUMB_MAX /
+	(((FAC_ODD_THRESHOLD + numberof (table) + 1) / 2) *
+	 ((FAC_ODD_THRESHOLD + numberof (table)) / 2));
 #endif
-      while (--n >= numberof (table))
-	FACTOR_LIST_STORE (n, prod, max_prod, factors, j);
+      for (;diff != 0; fac += (diff -= 2))
+	FACTOR_LIST_STORE (fac, prod, max_prod, factors, j);
 
       factors[j++] = prod;
       mpz_prodlimbs (x, factors, j);

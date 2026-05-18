@@ -4,7 +4,7 @@
 
    Contributed to the GNU project by Torbjörn Granlund.
 
-Copyright 2011-2014 Free Software Foundation, Inc.
+Copyright 2011-2015 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -32,7 +32,6 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
 
@@ -73,7 +72,6 @@ FNAME (Q(mp_ptr qp)
 {
   mp_limb_t d1, d0;
   unsigned int cnt;
-  gmp_pi1_t dinv;
   mp_limb_t inv32;
 
   ASSERT (dn >= 1);
@@ -85,7 +83,7 @@ FNAME (Q(mp_ptr qp)
 
   if (cnt != 0)
     {
-      mp_limb_t qh, cy;
+      mp_limb_t cy;
       mp_ptr np2, dp2;
       dp2 = tp;					/* dn limbs */
       mpn_lshift (dp2, dp, dn, cnt);
@@ -101,6 +99,7 @@ FNAME (Q(mp_ptr qp)
       /* We add nn + dn to tp here, not nn + 1 + dn, as expected.  This is
 	 since nn here will have been incremented.  */
 #if OPERATION_sec_div_qr
+      mp_limb_t qh;
       qh = mpn_sec_pi1_div_qr (np2 + dn, np2, nn, dp2, dn, inv32, tp + nn + dn);
       ASSERT (qh == 0);		/* FIXME: this indicates inefficiency! */
       MPN_COPY (qp, np2 + dn, nn - dn - 1);

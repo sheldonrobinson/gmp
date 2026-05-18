@@ -21,7 +21,6 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "tests.h"
 
@@ -238,7 +237,10 @@ main (int argc, char **argv)
   check_kolmo2 ();
 
   /* Testcase to exercise the u0 == u1 case in mpn_gcdext_lehmer_n. */
-  mpz_set_ui (op2, GMP_NUMB_MAX); /* FIXME: Huge limb doesn't always fit */
+  /* mpz_set_ui (op2, GMP_NUMB_MAX); */ /* FIXME: Huge limb doesn't always fit */
+  mpz_set_ui (op2, 0);
+  mpz_setbit (op2, GMP_NUMB_BITS);
+  mpz_sub_ui (op2, op2, 1);
   mpz_mul_2exp (op1, op2, 100);
   mpz_add (op1, op1, op2);
   mpz_mul_ui (op2, op2, 2);
@@ -287,6 +289,17 @@ main (int argc, char **argv)
 
       one_test (op1, op2, ref, i);
     }
+
+  /* Check that we can use NULL as first argument of mpz_gcdext.  */
+  mpz_set_si (op1, -10);
+  mpz_set_si (op2, 0);
+  mpz_gcdext (NULL, temp1, temp2, op1, op2);
+  ASSERT_ALWAYS (mpz_cmp_si (temp1, -1) == 0);
+  ASSERT_ALWAYS (mpz_cmp_si (temp2, 0) == 0);
+  mpz_set_si (op2, 6);
+  mpz_gcdext (NULL, temp1, temp2, op1, op2);
+  ASSERT_ALWAYS (mpz_cmp_si (temp1, 1) == 0);
+  ASSERT_ALWAYS (mpz_cmp_si (temp2, 2) == 0);
 
   mpz_clears (bs, op1, op2, ref, gcd1, gcd2, temp1, temp2, temp3, s, NULL);
 
@@ -419,6 +432,10 @@ gcdext_valid_p (const mpz_t a, const mpz_t b, const mpz_t g, const mpz_t s)
   if (mpz_sgn (g) <= 0)
     return 0;
 
+  /* Require that s==0 iff g==abs(b) */
+  if (!mpz_sgn (s) != !mpz_cmpabs (g, b))
+    return 0;
+
   mpz_tdiv_qr (temp1, temp3, a, g);
   if (mpz_sgn (temp3) != 0)
     return 0;
@@ -427,8 +444,8 @@ gcdext_valid_p (const mpz_t a, const mpz_t b, const mpz_t g, const mpz_t s)
   if (mpz_sgn (temp3) != 0)
     return 0;
 
-  /* Require that 2 |s| < |b/g|, or |s| == 1. */
-  if (mpz_cmpabs_ui (s, 1) > 0)
+  /* Require that 2 |s| < |b/g|, or s == sgn(a) */
+  if (mpz_cmp_si (s, mpz_sgn (a)) != 0)
     {
       mpz_mul_2exp (temp3, s, 1);
       if (mpz_cmpabs (temp3, temp2) >= 0)
@@ -443,8 +460,8 @@ gcdext_valid_p (const mpz_t a, const mpz_t b, const mpz_t g, const mpz_t s)
   if (mpz_sgn (temp3) != 0)
     return 0;
 
-  /* Require that 2 |t| < |a/g| or |t| == 1*/
-  if (mpz_cmpabs_ui (temp2, 1) > 0)
+  /* Require that 2 |t| < |a/g| or t == sgn(b) */
+  if (mpz_cmp_si (temp2, mpz_sgn (b)) != 0)
     {
       mpz_mul_2exp (temp2, temp2, 1);
       if (mpz_cmpabs (temp2, temp1) >= 0)

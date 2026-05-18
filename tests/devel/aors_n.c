@@ -19,7 +19,6 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "tests.h"
 
@@ -45,6 +44,18 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 #define func __gmpn_sublsh1_n
 #define reffunc refmpn_sublsh1_n
 #define funcname "mpn_sublsh1_n"
+#endif
+
+#ifdef OPERATION_addlsh2_n
+#define func __gmpn_addlsh2_n
+#define reffunc refmpn_addlsh2_n
+#define funcname "mpn_addlsh2_n"
+#endif
+
+#ifdef OPERATION_sublsh2_n
+#define func __gmpn_sublsh2_n
+#define reffunc refmpn_sublsh2_n
+#define funcname "mpn_sublsh2_n"
 #endif
 
 #ifdef OPERATION_rsh1add_n
@@ -164,6 +175,7 @@ main (int argc, char **argv)
       mpn_random2 (s2, size);
 
 #ifdef PRINT
+      puts ("");
       mpn_print (s1, size);
       mpn_print (s2, size);
 #endif

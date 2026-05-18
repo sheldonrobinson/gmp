@@ -1,6 +1,6 @@
 /* Speed measuring program.
 
-Copyright 1999-2003, 2005, 2006, 2008-2015 Free Software Foundation, Inc.
+Copyright 1999-2003, 2005, 2006, 2008-2022 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -51,15 +51,9 @@ see https://www.gnu.org/licenses/.  */
 #include <unistd.h>  /* for getpid, R_OK */
 #endif
 
-#if TIME_WITH_SYS_TIME
+#include <time.h>
+#if HAVE_SYS_TIME_H
 # include <sys/time.h>  /* for struct timeval */
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
 #endif
 
 #if HAVE_SYS_RESOURCE_H
@@ -67,7 +61,6 @@ see https://www.gnu.org/licenses/.  */
 #endif
 
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"  /* for the benefit of speed-many.c */
 #include "tests.h"
@@ -137,7 +130,7 @@ struct speed_params  sp;
 
 #define FLAG_R            (1<<0)  /* require ".r" */
 #define FLAG_R_OPTIONAL   (1<<1)  /* optional ".r" */
-#define FLAG_RSIZE        (1<<2)
+#define FLAG_SR_OPTIONAL  (1<<2)  /* optional ".r" or "/r" */
 #define FLAG_NODATA       (1<<3)  /* don't alloc xp, yp */
 
 const struct routine_t {
@@ -192,6 +185,9 @@ const struct routine_t {
 #if HAVE_NATIVE_mpn_addmul_8
   { "mpn_addmul_8",      speed_mpn_addmul_8,  FLAG_R_OPTIONAL },
 #endif
+#if HAVE_NATIVE_mpn_addaddmul_1msb0
+  { "mpn_addaddmul_1msb0",      speed_mpn_addaddmul_1msb0, FLAG_R_OPTIONAL },
+#endif
   { "mpn_mul_1",         speed_mpn_mul_1,     FLAG_R },
   { "mpn_mul_1_inplace", speed_mpn_mul_1_inplace, FLAG_R },
 #if HAVE_NATIVE_mpn_mul_2
@@ -245,6 +241,8 @@ const struct routine_t {
   { "mpn_div_qr_1n_pi1", speed_mpn_div_qr_1n_pi1, FLAG_R  },
   { "mpn_div_qr_1n_pi1_1",speed_mpn_div_qr_1n_pi1_1, FLAG_R  },
   { "mpn_div_qr_1n_pi1_2",speed_mpn_div_qr_1n_pi1_2, FLAG_R  },
+  { "mpn_div_qr_1n_pi1_3",speed_mpn_div_qr_1n_pi1_3, FLAG_R  },
+  { "mpn_div_qr_1n_pi1_4",speed_mpn_div_qr_1n_pi1_4, FLAG_R  },
   { "mpn_div_qr_1",      speed_mpn_div_qr_1,      FLAG_R },
 
   { "mpn_div_qr_2n",     speed_mpn_div_qr_2n,       },
@@ -286,6 +284,12 @@ const struct routine_t {
 
   { "mpn_matrix22_mul",  speed_mpn_matrix22_mul     },
 
+  { "mpn_hgcd2",         speed_mpn_hgcd2, FLAG_NODATA },
+  { "mpn_hgcd2_1",       speed_mpn_hgcd2_1, FLAG_NODATA },
+  { "mpn_hgcd2_2",       speed_mpn_hgcd2_2, FLAG_NODATA },
+  { "mpn_hgcd2_3",       speed_mpn_hgcd2_3, FLAG_NODATA },
+  { "mpn_hgcd2_4",       speed_mpn_hgcd2_4, FLAG_NODATA },
+  { "mpn_hgcd2_5",       speed_mpn_hgcd2_5, FLAG_NODATA },
   { "mpn_hgcd",          speed_mpn_hgcd             },
   { "mpn_hgcd_lehmer",   speed_mpn_hgcd_lehmer      },
   { "mpn_hgcd_appr",     speed_mpn_hgcd_appr        },
@@ -296,7 +300,9 @@ const struct routine_t {
   { "mpn_hgcd_reduce_2", speed_mpn_hgcd_reduce_2    },
 
   { "mpn_gcd_1",         speed_mpn_gcd_1,  FLAG_R_OPTIONAL },
+  { "mpn_gcd_11",        speed_mpn_gcd_11, FLAG_R_OPTIONAL },
   { "mpn_gcd_1N",        speed_mpn_gcd_1N, FLAG_R_OPTIONAL },
+  { "mpn_gcd_22",        speed_mpn_gcd_22, FLAG_R_OPTIONAL },
 
   { "mpn_gcd",           speed_mpn_gcd                    },
 
@@ -308,6 +314,13 @@ const struct routine_t {
 #if 0
   { "mpn_gcdext_lehmer",     speed_mpn_gcdext_lehmer     },
 #endif
+
+  { "gmp_primesieve",    speed_gmp_primesieve, FLAG_NODATA      },
+  { "mpz_nextprime",     speed_mpz_nextprime        },
+  { "mpz_nextprime_1",   speed_mpz_nextprime_1, FLAG_R_OPTIONAL },
+  { "mpz_prevprime",     speed_mpz_prevprime        },
+  { "mpz_prevprime_1",   speed_mpz_prevprime_1, FLAG_R_OPTIONAL },
+
   { "mpz_jacobi",        speed_mpz_jacobi           },
   { "mpn_jacobi_base",   speed_mpn_jacobi_base      },
   { "mpn_jacobi_base_1", speed_mpn_jacobi_base_1    },
@@ -315,8 +328,8 @@ const struct routine_t {
   { "mpn_jacobi_base_3", speed_mpn_jacobi_base_3    },
   { "mpn_jacobi_base_4", speed_mpn_jacobi_base_4    },
 
-  { "mpn_mul",           speed_mpn_mul,         FLAG_R_OPTIONAL },
-  { "mpn_mul_basecase",  speed_mpn_mul_basecase,FLAG_R_OPTIONAL },
+  { "mpn_mul",           speed_mpn_mul,         FLAG_SR_OPTIONAL },
+  { "mpn_mul_basecase",  speed_mpn_mul_basecase,FLAG_SR_OPTIONAL },
   { "mpn_sqr_basecase",  speed_mpn_sqr_basecase     },
 #if HAVE_NATIVE_mpn_sqr_diagonal
   { "mpn_sqr_diagonal",  speed_mpn_sqr_diagonal     },
@@ -333,15 +346,17 @@ const struct routine_t {
   { "mpn_toom4_sqr",     speed_mpn_toom4_sqr        },
   { "mpn_toom6_sqr",     speed_mpn_toom6_sqr        },
   { "mpn_toom8_sqr",     speed_mpn_toom8_sqr        },
-  { "mpn_toom22_mul",    speed_mpn_toom22_mul       },
-  { "mpn_toom33_mul",    speed_mpn_toom33_mul       },
-  { "mpn_toom44_mul",    speed_mpn_toom44_mul       },
-  { "mpn_toom6h_mul",    speed_mpn_toom6h_mul       },
-  { "mpn_toom8h_mul",    speed_mpn_toom8h_mul       },
-  { "mpn_toom32_mul",    speed_mpn_toom32_mul       },
-  { "mpn_toom42_mul",    speed_mpn_toom42_mul       },
-  { "mpn_toom43_mul",    speed_mpn_toom43_mul       },
-  { "mpn_toom63_mul",    speed_mpn_toom63_mul       },
+  { "mpn_toom22_mul",    speed_mpn_toom22_mul, FLAG_SR_OPTIONAL },
+  { "mpn_toom33_mul",    speed_mpn_toom33_mul, FLAG_SR_OPTIONAL },
+  { "mpn_toom44_mul",    speed_mpn_toom44_mul, FLAG_SR_OPTIONAL },
+  { "mpn_toom6h_mul",    speed_mpn_toom6h_mul, FLAG_SR_OPTIONAL },
+  { "mpn_toom8h_mul",    speed_mpn_toom8h_mul, FLAG_SR_OPTIONAL },
+  { "mpn_toom32_mul",    speed_mpn_toom32_mul, FLAG_SR_OPTIONAL },
+  { "mpn_toom42_mul",    speed_mpn_toom42_mul, FLAG_SR_OPTIONAL },
+  { "mpn_toom43_mul",    speed_mpn_toom43_mul, FLAG_SR_OPTIONAL },
+  { "mpn_toom53_mul",    speed_mpn_toom53_mul, FLAG_SR_OPTIONAL },
+  { "mpn_toom54_mul",    speed_mpn_toom54_mul, FLAG_SR_OPTIONAL },
+  { "mpn_toom63_mul",    speed_mpn_toom63_mul, FLAG_SR_OPTIONAL },
   { "mpn_nussbaumer_mul",    speed_mpn_nussbaumer_mul    },
   { "mpn_nussbaumer_mul_sqr",speed_mpn_nussbaumer_mul_sqr},
 #if WANT_OLD_FFT_FULL
@@ -366,6 +381,11 @@ const struct routine_t {
   { "mpn_mulmod_bnm1_rounded", speed_mpn_mulmod_bnm1_rounded },
   { "mpn_sqrmod_bnm1",         speed_mpn_sqrmod_bnm1         },
 
+  { "mpn_mulmod_bknp1",        speed_mpn_mulmod_bknp1, FLAG_R_OPTIONAL },
+  { "mpn_sqrmod_bknp1",        speed_mpn_sqrmod_bknp1, FLAG_R_OPTIONAL },
+  { "mpn_mulmod_bnp1",         speed_mpn_mulmod_bnp1         },
+  { "mpn_sqrmod_bnp1",         speed_mpn_sqrmod_bnp1         },
+
   { "mpn_invert",              speed_mpn_invert              },
   { "mpn_invertappr",          speed_mpn_invertappr          },
   { "mpn_ni_invertappr",       speed_mpn_ni_invertappr       },
@@ -383,6 +403,7 @@ const struct routine_t {
   { "mpn_dcpi1_bdiv_qr",       speed_mpn_dcpi1_bdiv_qr       },
   { "mpn_sbpi1_bdiv_q",        speed_mpn_sbpi1_bdiv_q        },
   { "mpn_dcpi1_bdiv_q",        speed_mpn_dcpi1_bdiv_q        },
+  { "mpn_sbpi1_bdiv_r",        speed_mpn_sbpi1_bdiv_r        },
 
   { "mpn_broot",               speed_mpn_broot,    FLAG_R },
   { "mpn_broot_invm1",         speed_mpn_broot_invm1, FLAG_R },
@@ -397,6 +418,9 @@ const struct routine_t {
   { "mpn_sqrt",          speed_mpn_sqrt             },
   { "mpn_root",          speed_mpn_root, FLAG_R     },
 
+  { "mpn_perfect_power_p",  speed_mpn_perfect_power_p,       },
+  { "mpn_perfect_square_p", speed_mpn_perfect_square_p,      },
+
   { "mpn_fib2_ui",       speed_mpn_fib2_ui,    FLAG_NODATA },
   { "mpz_fib_ui",        speed_mpz_fib_ui,     FLAG_NODATA },
   { "mpz_fib2_ui",       speed_mpz_fib2_ui,    FLAG_NODATA },
@@ -404,11 +428,14 @@ const struct routine_t {
   { "mpz_lucnum2_ui",    speed_mpz_lucnum2_ui, FLAG_NODATA },
 
   { "mpz_add",           speed_mpz_add              },
+  { "mpz_invert",        speed_mpz_invert,   FLAG_R_OPTIONAL },
   { "mpz_bin_uiui",      speed_mpz_bin_uiui, FLAG_NODATA | FLAG_R_OPTIONAL },
   { "mpz_bin_ui",        speed_mpz_bin_ui,   FLAG_NODATA | FLAG_R_OPTIONAL },
   { "mpz_fac_ui",        speed_mpz_fac_ui,   FLAG_NODATA   },
   { "mpz_2fac_ui",       speed_mpz_2fac_ui,  FLAG_NODATA   },
-  { "mpz_powm",          speed_mpz_powm             },
+  { "mpz_mfac_uiui",     speed_mpz_mfac_uiui,  FLAG_NODATA | FLAG_R_OPTIONAL },
+  { "mpz_primorial_ui",  speed_mpz_primorial_ui, FLAG_NODATA },
+  { "mpz_powm",          speed_mpz_powm,     FLAG_R_OPTIONAL },
   { "mpz_powm_mod",      speed_mpz_powm_mod         },
   { "mpz_powm_redc",     speed_mpz_powm_redc        },
   { "mpz_powm_sec",      speed_mpz_powm_sec        },
@@ -551,6 +578,7 @@ const struct routine_t {
 struct choice_t {
   const struct routine_t  *p;
   mp_limb_t               r;
+  double                  size_ratio;
   double                  scale;
   double                  time;
   int                     no_time;
@@ -645,6 +673,7 @@ run_one (FILE *fp, struct speed_params *s, mp_size_t prev_size)
   for (i = 0; i < num_choices; i++)
     {
       s->r = choice[i].r;
+      s->size_ratio = choice[i].size_ratio;
       choice[i].time = speed_measure (choice[i].p->fun, s);
       choice[i].no_time = (choice[i].time == -1.0);
       if (! choice[i].no_time)
@@ -884,6 +913,9 @@ run_gnuplot (int argc, char *argv[])
      interactively if it's not. */
   fprintf (fp, "set key left\n");
 
+  /* write underscores, not subscripts */
+  fprintf (fp, "set termoption noenhanced\n");
+
   /* designed to make it possible to see crossovers easily */
   fprintf (fp, "set style data lines\n");
 
@@ -983,6 +1015,17 @@ r_string (const char *s)
   return n;
 }
 
+double slash_r_string (const char *s)
+{
+  char *end;
+  double r = strtod(s, &end);
+  if (s[0] == '\0' || end[0] != '\0' || r > 1.0 || r < 0.0)
+    {
+      fprintf (stderr, "invalid /r parameter: %s\n", s);
+      exit (1);
+    }
+  return r;
+}
 
 void
 routine_find (struct choice_t *c, const char *s_orig)
@@ -1014,7 +1057,7 @@ routine_find (struct choice_t *c, const char *s_orig)
         {
           /* match, with a .r parameter */
 
-          if (! (routine[i].flag & (FLAG_R|FLAG_R_OPTIONAL)))
+          if (! (routine[i].flag & (FLAG_R|FLAG_R_OPTIONAL|FLAG_SR_OPTIONAL)))
             {
               fprintf (stderr,
                        "Choice %s bad: doesn't take a \".<r>\" parameter\n",
@@ -1024,6 +1067,24 @@ routine_find (struct choice_t *c, const char *s_orig)
 
           c->p = &routine[i];
           c->r = r_string (s + nlen + 1);
+          c->size_ratio = 0.0;
+          return;
+        }
+      if (s[nlen] == '/')
+        {
+          /* match, with a /r parameter */
+
+          if (! (routine[i].flag & (FLAG_SR_OPTIONAL)))
+            {
+              fprintf (stderr,
+                       "Choice %s bad: doesn't take a \"/<r>\" parameter\n",
+                       s_orig);
+              exit (1);
+            }
+
+          c->p = &routine[i];
+          c->r = 0;
+          c->size_ratio = slash_r_string (s + nlen + 1);
           return;
         }
 
@@ -1041,6 +1102,7 @@ routine_find (struct choice_t *c, const char *s_orig)
 
           c->p = &routine[i];
           c->r = 0;
+          c->size_ratio = 0.0;
           return;
         }
     }
@@ -1097,6 +1159,8 @@ usage (void)
         printf ("\t%s.r\n", routine[i].name);
       else if (routine[i].flag & FLAG_R_OPTIONAL)
         printf ("\t%s (optional .r)\n", routine[i].name);
+      else if (routine[i].flag & FLAG_SR_OPTIONAL)
+        printf ("\t%s (optional .r or /r)\n", routine[i].name);
       else
         printf ("\t%s\n", routine[i].name);
     }
@@ -1106,6 +1170,8 @@ usage (void)
   printf ("\n");
   printf ("Special forms for r are \"<N>bits\" for a random N bit number, \"<N>ones\" for\n");
   printf ("N one bits, or \"aas\" for 0xAA..AA.\n");
+  printf ("\n");
+  printf ("Routines with an optional \"/r\" take a decimal ratio, for example mpn_mul/0.7.\n");
   printf ("\n");
   printf ("Times for sizes out of the range accepted by a routine are shown as 0.\n");
   printf ("The fastest routine at each size is marked with a # (free form output only).\n");
@@ -1361,7 +1427,7 @@ main (int argc, char *argv[])
           perror ("getrusage");
         else
           printf ("getrusage(): utime %ld.%06ld data %ld stack %ld maxresident %ld\n",
-                  r.ru_utime.tv_sec, r.ru_utime.tv_usec,
+                  (long) r.ru_utime.tv_sec, (long) r.ru_utime.tv_usec,
                   r.ru_idrss, r.ru_isrss, r.ru_ixrss);
       }
 #else

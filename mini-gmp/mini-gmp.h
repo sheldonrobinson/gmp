@@ -1,6 +1,6 @@
 /* mini-gmp, a minimalistic implementation of a GNU GMP subset.
 
-Copyright 2011-2015 Free Software Foundation, Inc.
+Copyright 2011-2015, 2017, 2019-2021 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -53,7 +53,11 @@ void mp_get_memory_functions (void *(**) (size_t),
 			      void *(**) (void *, size_t, size_t),
 			      void (**) (void *, size_t));
 
-typedef unsigned long mp_limb_t;
+#ifndef MINI_GMP_LIMB_TYPE
+#define MINI_GMP_LIMB_TYPE long
+#endif
+
+typedef unsigned MINI_GMP_LIMB_TYPE mp_limb_t;
 typedef long mp_size_t;
 typedef unsigned long mp_bitcnt_t;
 
@@ -101,6 +105,7 @@ void mpn_mul_n (mp_ptr, mp_srcptr, mp_srcptr, mp_size_t);
 void mpn_sqr (mp_ptr, mp_srcptr, mp_size_t);
 int mpn_perfect_square_p (mp_srcptr, mp_size_t);
 mp_size_t mpn_sqrtrem (mp_ptr, mp_ptr, mp_srcptr, mp_size_t);
+mp_size_t mpn_gcd (mp_ptr, mp_ptr, mp_size_t, mp_ptr, mp_size_t);
 
 mp_limb_t mpn_lshift (mp_ptr, mp_srcptr, mp_size_t, unsigned int);
 mp_limb_t mpn_rshift (mp_ptr, mp_srcptr, mp_size_t, unsigned int);
@@ -217,6 +222,8 @@ void mpz_rootrem (mpz_t, mpz_t, const mpz_t, unsigned long);
 int mpz_root (mpz_t, const mpz_t, unsigned long);
 
 void mpz_fac_ui (mpz_t, unsigned long);
+void mpz_2fac_ui (mpz_t, unsigned long);
+void mpz_mfac_uiui (mpz_t, unsigned long, unsigned long);
 void mpz_bin_uiui (mpz_t, unsigned long, unsigned long);
 
 int mpz_probab_prime_p (const mpz_t, int);
@@ -238,6 +245,10 @@ mp_bitcnt_t mpz_scan1 (const mpz_t, mp_bitcnt_t);
 
 int mpz_fits_slong_p (const mpz_t);
 int mpz_fits_ulong_p (const mpz_t);
+int mpz_fits_sint_p (const mpz_t);
+int mpz_fits_uint_p (const mpz_t);
+int mpz_fits_sshort_p (const mpz_t);
+int mpz_fits_ushort_p (const mpz_t);
 long int mpz_get_si (const mpz_t);
 unsigned long int mpz_get_ui (const mpz_t);
 double mpz_get_d (const mpz_t);
@@ -285,7 +296,9 @@ int mpz_init_set_str (mpz_t, const char *, int);
   || defined (_MSL_STDIO_H)           /* Metrowerks */          \
   || defined (_STDIO_H_INCLUDED)      /* QNX4 */		\
   || defined (_ISO_STDIO_ISO_H)       /* Sun C++ */		\
-  || defined (__STDIO_LOADED)         /* VMS */
+  || defined (__STDIO_LOADED)         /* VMS */			\
+  || defined (_STDIO)                 /* HPE NonStop */         \
+  || defined (__DEFINED_FILE)         /* musl */
 size_t mpz_out_str (FILE *, int, const mpz_t);
 #endif
 

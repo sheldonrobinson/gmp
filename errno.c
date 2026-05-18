@@ -4,7 +4,7 @@
    ONLY.  THEY'RE ALMOST CERTAIN TO BE SUBJECT TO INCOMPATIBLE CHANGES OR
    DISAPPEAR COMPLETELY IN FUTURE GNU MP RELEASES.
 
-Copyright 2000, 2001, 2003 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2003, 2021 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -33,24 +33,26 @@ GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
 #include <stdlib.h>
-#include "gmp.h"
+
+#include <signal.h>
+
 #include "gmp-impl.h"
 
 int gmp_errno = 0;
 
 
-/* The deliberate divide by zero triggers an exception on most systems.  On
-   those where it doesn't, for example power and powerpc, use abort instead.
-
-   Enhancement: Perhaps raise(SIGFPE) (or the same with kill()) would be
-   better than abort.  Perhaps it'd be possible to get the BSD style
-   FPE_INTDIV_TRAP parameter in there too.  */
-
+/* Use SIGFPE on systems which have it. Otherwise, deliberate divide
+   by zero, which triggers an exception on most systems. On those
+   where it doesn't, for example power and powerpc, use abort instead. */
 void
 __gmp_exception (int error_bit)
 {
   gmp_errno |= error_bit;
+#ifdef SIGFPE
+  raise (SIGFPE);
+#else
   __gmp_junk = 10 / __gmp_0;
+#endif
   abort ();
 }
 
@@ -67,4 +69,9 @@ void
 __gmp_divide_by_zero (void)
 {
   __gmp_exception (GMP_ERROR_DIVISION_BY_ZERO);
+}
+void
+__gmp_overflow_in_mpz (void)
+{
+  __gmp_exception (GMP_ERROR_MPZ_OVERFLOW);
 }

@@ -53,17 +53,15 @@ see https://www.gnu.org/licenses/.  */
 
 #if HAVE_INTTYPES_H
 # include <inttypes.h> /* for intmax_t */
-#else
-# if HAVE_STDINT_H
-#  include <stdint.h>
-# endif
+#endif
+#if HAVE_STDINT_H
+# include <stdint.h>
 #endif
 
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h> /* for quad_t */
 #endif
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 
@@ -402,7 +400,7 @@ gmpscan (const struct gmp_doscan_funs_t *funs, void *data,
 	      if (exp >= 0)
 		mpf_mul_2exp (f, f, (unsigned long) exp);
 	      else
-		mpf_div_2exp (f, f, - (unsigned long) exp);
+		mpf_div_2exp (f, f, NEG_CAST (unsigned long, exp));
 	    }
 	}
 	break;
@@ -500,7 +498,7 @@ __gmp_doscan (const struct gmp_doscan_funs_t *funs, void *data,
   alloc_fmt = __GMP_ALLOCATE_FUNC_TYPE (alloc_fmt_size, char);
 
   fmt = orig_fmt;
-  end_fmt = orig_fmt + orig_fmt_len;
+  ASSERT_CODE (end_fmt = orig_fmt + orig_fmt_len);
 
   for (;;)
     {

@@ -36,7 +36,6 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
 
@@ -114,7 +113,8 @@ see https://www.gnu.org/licenses/.  */
 	     "subfe	%0, %0, %0\n\t"					\
 	     "nor	%0, %0, %0"					\
 	   : "=r" (m), "=r" (s1), "=&r" (s0)				\
-	   : "r"  (a1), "r" (b1), "%r" (a0), "rI" (b0))
+	   : "r"  (a1), "r" (b1), "%r" (a0), "rI" (b0)			\
+	     __CLOBBER_CC)
 #endif
 
 #if defined (__s390x__) && W_TYPE_SIZE == 64
@@ -137,6 +137,15 @@ see https://www.gnu.org/licenses/.  */
 	     "movcs	%0, #-1"					\
 	   : "=r" (m), "=r" (sh), "=&r" (sl)				\
 	   : "r" (ah), "rI" (bh), "%r" (al), "rI" (bl) __CLOBBER_CC)
+#endif
+
+#if defined (__aarch64__) && W_TYPE_SIZE == 64
+#define add_mssaaaa(m, sh, sl, ah, al, bh, bl)				\
+  __asm__ (  "adds	%2, %x5, %6\n\t"				\
+	     "adcs	%1, %x3, %x4\n\t"				\
+	     "csinv	%0, xzr, xzr, cc\n\t"				\
+	   : "=r" (m), "=r" (sh), "=&r" (sl)				\
+	   : "rZ" (ah), "rZ" (bh), "%rZ" (al), "rI" (bl) __CLOBBER_CC)
 #endif
 #endif /* defined (__GNUC__) */
 

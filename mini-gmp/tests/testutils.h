@@ -1,6 +1,6 @@
 /*
 
-Copyright 2013, 2014, Free Software Foundation, Inc.
+Copyright 2013, 2014, 2018, Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library test suite.
 
@@ -28,10 +28,15 @@ void testmain (int argc, char **argv);
 
 void testhalves (int count, void (*tested_fun) (int));
 
-void testfree (void *p);
+void testfree (void *p, size_t size);
 
 void
 dump (const char *label, const mpz_t x);
 
 void
 mpz_set_str_or_abort (mpz_ptr z, const char *str, int base);
+
+/* Prototype for wrappers to internal functions to be tested. */
+int
+mpz_lucas_mod (mpz_t V, mpz_t Qk, long Q,
+	       mp_bitcnt_t b0, const mpz_t n);

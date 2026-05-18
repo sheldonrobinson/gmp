@@ -176,15 +176,9 @@ see https://www.gnu.org/licenses/.  */
 
 #include <sys/types.h>
 
-#if TIME_WITH_SYS_TIME
+#include <time.h>
+#if HAVE_SYS_TIME_H
 # include <sys/time.h>  /* for struct timeval */
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
 #endif
 
 #if HAVE_SYS_MMAN_H
@@ -207,7 +201,6 @@ see https://www.gnu.org/licenses/.  */
 #include <sys/times.h>  /* for times() and struct tms */
 #endif
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 #include "speed.h"
@@ -453,7 +446,7 @@ unittime_string (double t)
 
 static jmp_buf  cycles_works_buf;
 
-static RETSIGTYPE
+static void
 cycles_works_handler (int sig)
 {
   longjmp (cycles_works_buf, 1);
@@ -482,7 +475,7 @@ cycles_works_p (void)
    * all linux systems. */
 #ifdef SIGILL
   {
-    RETSIGTYPE (*old_handler) (int);
+    void (*old_handler) (int);
     unsigned  cycles[2];
 
     old_handler = signal (SIGILL, cycles_works_handler);
@@ -833,7 +826,7 @@ freq_measure_mftb_one (void)
 
 static jmp_buf  mftb_works_buf;
 
-static RETSIGTYPE
+static void
 mftb_works_handler (int sig)
 {
   longjmp (mftb_works_buf, 1);
@@ -842,9 +835,9 @@ mftb_works_handler (int sig)
 int
 mftb_works_p (void)
 {
-  unsigned   a[2];
-  RETSIGTYPE (*old_handler) (int);
-  double     cycletime;
+  unsigned a[2];
+  void     (*old_handler) (int);
+  double   cycletime;
 
   /* suppress a warning about a[] unused */
   a[0] = 0;
@@ -1473,18 +1466,20 @@ speed_endtime (void)
 
       if (use_cgt)
 	printf ("   clock_gettime  %ld.%09ld -> %ld.%09ld\n",
-		start_cgt.tv_sec, start_cgt.tv_nsec,
-		end_cgt.tv_sec, end_cgt.tv_nsec);
+		(long) start_cgt.tv_sec, (long) start_cgt.tv_nsec,
+		(long) end_cgt.tv_sec, (long) end_cgt.tv_nsec);
 
       if (use_gtod)
 	printf ("   gettimeofday  %ld.%06ld -> %ld.%06ld\n",
-		start_gtod.tv_sec, start_gtod.tv_usec,
-		end_gtod.tv_sec, end_gtod.tv_usec);
+		(long) start_gtod.tv_sec, (long) start_gtod.tv_usec,
+		(long) end_gtod.tv_sec, (long) end_gtod.tv_usec);
 
       if (use_grus)
 	printf ("   getrusage  %ld.%06ld -> %ld.%06ld\n",
-		start_grus.ru_utime.tv_sec, start_grus.ru_utime.tv_usec,
-		end_grus.ru_utime.tv_sec, end_grus.ru_utime.tv_usec);
+		(long) start_grus.ru_utime.tv_sec,
+		(long) start_grus.ru_utime.tv_usec,
+		(long) end_grus.ru_utime.tv_sec,
+		(long) end_grus.ru_utime.tv_usec);
 
       if (use_times)
 	printf ("   times  %ld -> %ld\n",

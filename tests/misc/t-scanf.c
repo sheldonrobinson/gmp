@@ -39,17 +39,15 @@ the GNU MP Library test suite.  If not, see https://www.gnu.org/licenses/.  */
 
 #if HAVE_INTTYPES_H
 # include <inttypes.h> /* for intmax_t */
-#else
-# if HAVE_STDINT_H
-#  include <stdint.h>
-# endif
+#endif
+#if HAVE_STDINT_H
+# include <stdint.h>
 #endif
 
 #if HAVE_UNISTD_H
 #include <unistd.h>  /* for unlink */
 #endif
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "tests.h"
 

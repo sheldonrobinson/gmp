@@ -34,7 +34,6 @@ see https://www.gnu.org/licenses/.  */
 
 #include <stdio.h>   /* for NULL */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 #include "randmt.h"
 
@@ -192,7 +191,7 @@ __gmp_mt_recalc_buffer (gmp_uint_least32_t mt[])
    Note that Mersenne Twister is designed to produce outputs in
    32-bit words.  */
 void
-__gmp_randget_mt (gmp_randstate_t rstate, mp_ptr dest, unsigned long int nbits)
+__gmp_randget_mt (gmp_randstate_ptr rstate, mp_ptr dest, unsigned long int nbits)
 {
   gmp_uint_least32_t y;
   int rbits;
@@ -355,7 +354,7 @@ __gmp_randget_mt (gmp_randstate_t rstate, mp_ptr dest, unsigned long int nbits)
 }
 
 void
-__gmp_randclear_mt (gmp_randstate_t rstate)
+__gmp_randclear_mt (gmp_randstate_ptr rstate)
 {
   (*__gmp_free_func) ((void *) RNG_STATE (rstate),
 		      ALLOC (rstate->_mp_seed) * GMP_LIMB_BYTES);
@@ -378,7 +377,7 @@ __gmp_randiset_mt (gmp_randstate_ptr dst, gmp_randstate_srcptr src)
   mp_size_t i;
 
   /* Set the generator functions.  */
-  RNG_FNPTR (dst) = (void *) &Mersenne_Twister_Generator_Noseed;
+  RNG_FNPTR (dst) = RNG_FNPTR(src);
 
   /* Allocate the MT-specific state.  */
   dstp = (gmp_rand_mt_struct *) __GMP_ALLOCATE_FUNC_LIMBS (sz);

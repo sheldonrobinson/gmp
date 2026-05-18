@@ -28,11 +28,10 @@ You should have received copies of the GNU General Public License and the
 GNU Lesser General Public License along with the GNU MP Library.  If not,
 see https://www.gnu.org/licenses/.  */
 
-#include "gmp.h"
 #include "gmp-impl.h"
 
 void
-gmp_randclear (gmp_randstate_t rstate)
+gmp_randclear (gmp_randstate_ptr rstate)
 {
   (*((gmp_randfnptr_t *) RNG_FNPTR (rstate))->randclear_fn) (rstate);
 }
